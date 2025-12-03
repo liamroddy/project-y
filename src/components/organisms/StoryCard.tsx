@@ -18,14 +18,8 @@ interface StoryCardProps {
   isActive?: boolean;
 }
 
-export function StoryCard({
-  story,
-  mode = 'link',
-  onSelect,
-  isActive = false,
-}: StoryCardProps) {
-  const targetUrl =
-    story.url ?? `https://news.ycombinator.com/item?id=${story.id}`;
+export function StoryCard({ story, mode = 'link', onSelect, isActive = false }: StoryCardProps) {
+  const targetUrl = story.url ?? `https://news.ycombinator.com/item?id=${String(story.id)}`;
 
   const actionProps =
     mode === 'link'
@@ -55,10 +49,7 @@ export function StoryCard({
         transition: 'border-color 150ms ease, background-color 150ms ease',
       }}
     >
-      <CardActionArea
-        sx={{ height: '100%', alignItems: 'stretch' }}
-        {...actionProps}
-      >
+      <CardActionArea sx={{ height: '100%', alignItems: 'stretch' }} {...actionProps}>
         <CardContent sx={{ height: '100%' }}>
           <Stack spacing={1.5}>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -84,7 +75,7 @@ export function StoryCard({
                 <LaunchIcon color="primary" fontSize="small" />
               )}
             </Stack>
-            {story.domain && (
+            {Boolean(story.domain) && (
               <Chip
                 size="small"
                 icon={<OpenInNewIcon fontSize="small" />}

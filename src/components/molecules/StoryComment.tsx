@@ -22,12 +22,7 @@ export function StoryComment({ comment, depth = 0 }: StoryCommentProps) {
     >
       <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
         {author}
-        <Typography
-          component="span"
-          variant="caption"
-          color="text.secondary"
-          sx={{ ml: 1 }}
-        >
+        <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 1 }}>
           {formatRelativeTime(comment.time)}
         </Typography>
       </Typography>

@@ -20,15 +20,8 @@ const BUFFER_ROWS = 5;
 const PORTRAIT_CONTENT_WIDTH = 520;
 
 export function StoriesFeed() {
-  const {
-    feedType,
-    setFeedType,
-    stories,
-    hasMore,
-    isInitializing,
-    error,
-    loadMore,
-  } = useStoriesFeed('top');
+  const { feedType, setFeedType, stories, hasMore, isInitializing, error, loadMore } =
+    useStoriesFeed('top');
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
@@ -95,12 +88,8 @@ export function StoriesFeed() {
 
   const virtualizedStories = useMemo(() => {
     const totalHeight = stories.length * ROW_HEIGHT;
-    const visibleRowCount =
-      Math.ceil(containerHeight / ROW_HEIGHT) + BUFFER_ROWS * 2;
-    const startIndex = Math.max(
-      0,
-      Math.floor(scrollTop / ROW_HEIGHT) - BUFFER_ROWS,
-    );
+    const visibleRowCount = Math.ceil(containerHeight / ROW_HEIGHT) + BUFFER_ROWS * 2;
+    const startIndex = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER_ROWS);
     const endIndex = Math.min(stories.length, startIndex + visibleRowCount);
     const offsetY = startIndex * ROW_HEIGHT;
 
@@ -146,12 +135,7 @@ export function StoriesFeed() {
         scrollableTarget={SCROLL_CONTAINER_ID}
         style={{ overflow: 'visible' }}
         endMessage={
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            textAlign="center"
-            py={3}
-          >
+          <Typography variant="body2" color="text.secondary" textAlign="center" py={3}>
             You are all caught up.
           </Typography>
         }
@@ -167,7 +151,7 @@ export function StoriesFeed() {
               position: 'absolute',
               left: 0,
               right: 0,
-              transform: `translateY(${virtualizedStories.offsetY}px)`,
+              transform: `translateY(${String(virtualizedStories.offsetY)}px)`,
             }}
           >
             <Stack spacing={2.5}>
@@ -177,7 +161,7 @@ export function StoriesFeed() {
                   story={story}
                   mode={cardMode}
                   onSelect={isLandscape ? handleStorySelect : undefined}
-                  isActive={isLandscape && selectedStoryId === story.id}
+                  isActive={isLandscape ? selectedStoryId === story.id : false}
                 />
               ))}
             </Stack>
@@ -191,8 +175,7 @@ export function StoriesFeed() {
     <Box
       sx={{
         minHeight: '100vh',
-        background:
-          'linear-gradient(180deg, rgba(15,23,42,1) 0%, rgba(15,23,42,0.9) 100%)',
+        background: 'linear-gradient(180deg, rgba(15,23,42,1) 0%, rgba(15,23,42,0.9) 100%)',
         color: 'text.primary',
       }}
     >
@@ -211,9 +194,7 @@ export function StoriesFeed() {
           height: 'calc(100vh - 80px)',
         }}
       >
-        {error && !isInitializing ? (
-          <ErrorBanner message={error} />
-        ) : null}
+        {Boolean(error) && !isInitializing ? <ErrorBanner message={String(error)} /> : null}
         <Stack
           direction={isLandscape ? 'row' : 'column'}
           spacing={isLandscape ? 3 : 0}

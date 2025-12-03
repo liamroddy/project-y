@@ -14,20 +14,16 @@ interface StoryMetaProps {
 export function StoryMeta({ story }: StoryMetaProps) {
   return (
     <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center">
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ fontWeight: 500 }}
-      >
+      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
         by {story.by}
       </Typography>
       <StoryMetaItem
         icon={<WhatshotIcon fontSize="small" />}
-        label={`${story.score} points`}
+        label={`${String(story.score)} points`}
       />
       <StoryMetaItem
         icon={<ChatBubbleOutlineIcon fontSize="small" />}
-        label={`${story.descendants ?? 0} comments`}
+        label={`${String(story.descendants ?? 0)} comments`}
       />
       <StoryMetaItem
         icon={<ScheduleIcon fontSize="small" />}

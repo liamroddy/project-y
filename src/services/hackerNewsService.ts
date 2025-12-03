@@ -1,10 +1,4 @@
-import type {
-  Comment,
-  CommentNode,
-  StoriesBatch,
-  Story,
-  StoryFeedSort,
-} from '../types/hackerNews';
+import type { Comment, CommentNode, StoriesBatch, Story, StoryFeedSort } from '../types/hackerNews';
 
 const API_BASE = 'https://hacker-news.firebaseio.com/v0';
 const PAGE_SIZE = 20;
@@ -17,7 +11,7 @@ async function fetchJson<T>(endpoint: string): Promise<T> {
   const response = await fetch(`${API_BASE}/${endpoint}.json`);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
+    throw new Error(`Failed to fetch ${endpoint}: ${String(response.status)}`);
   }
 
   return response.json() as Promise<T>;
@@ -38,7 +32,8 @@ function extractDomain(url?: string): string | undefined {
 
 async function getStoryIds(feed: StoryFeedSort): Promise<number[]> {
   if (idCache.has(feed)) {
-    return idCache.get(feed)!;
+    const cached = idCache.get(feed);
+    if (cached) return cached;
   }
 
   const endpoint = feed === 'top' ? 'topstories' : 'newstories';
@@ -49,10 +44,11 @@ async function getStoryIds(feed: StoryFeedSort): Promise<number[]> {
 
 async function loadStory(id: number): Promise<Story> {
   if (storyCache.has(id)) {
-    return storyCache.get(id)!;
+    const cached = storyCache.get(id);
+    if (cached) return cached;
   }
 
-  const rawStory = await fetchJson<Story>(`item/${id}`);
+  const rawStory = await fetchJson<Story>(`item/${String(id)}`);
   const storyWithDomain: Story = {
     ...rawStory,
     domain: extractDomain(rawStory.url),
@@ -67,7 +63,7 @@ async function loadComment(id: number): Promise<Comment | null> {
     return commentCache.get(id) ?? null;
   }
 
-  const comment = await fetchJson<Comment>(`item/${id}`);
+  const comment = await fetchJson<Comment>(`item/${String(id)}`);
   commentCache.set(id, comment);
   return comment;
 }
@@ -77,11 +73,11 @@ async function buildCommentTree(ids?: number[]): Promise<CommentNode[]> {
     return [];
   }
 
-  const nodes: Array<CommentNode | null> = await Promise.all(
+  const nodes: (CommentNode | null)[] = await Promise.all(
     ids.map(async (commentId) => {
       const comment = await loadComment(commentId);
 
-      if (!comment || comment.deleted || comment.dead || comment.type !== 'comment') {
+      if (!comment || comment.deleted || comment.dead) {
         return null;
       }
 

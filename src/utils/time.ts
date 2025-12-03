@@ -14,7 +14,7 @@ export function formatRelativeTime(timestamp: number): string {
   for (const { label, ms } of unitTable) {
     if (diff >= ms) {
       const value = Math.floor(diff / ms);
-      return `${value}${label} ago`;
+      return `${String(value)}${label} ago`;
     }
   }
 

@@ -22,13 +22,12 @@ export function useStoriesFeed(initialFeed: StoryFeedSort = 'top') {
       setNextStart(batch.nextStart);
       setHasMore(batch.hasMore);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Unable to fetch stories';
+      const message = err instanceof Error ? err.message : 'Unable to fetch stories';
       setError(message);
       setStories([]);
       setHasMore(false);
     } finally {
-      setIsInitializing(false); 
+      setIsInitializing(false);
     }
   }, [feedType]);
 
@@ -46,8 +45,7 @@ export function useStoriesFeed(initialFeed: StoryFeedSort = 'top') {
       setNextStart(batch.nextStart);
       setHasMore(batch.hasMore);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Unable to fetch more stories';
+      const message = err instanceof Error ? err.message : 'Unable to fetch more stories';
       setError(message);
     } finally {
       setIsFetchingMore(false);

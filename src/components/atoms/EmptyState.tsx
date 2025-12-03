@@ -12,11 +12,11 @@ export function EmptyState({ title, description }: EmptyStateProps) {
       <Typography variant="h6" gutterBottom>
         {title}
       </Typography>
-      {description && (
+      {description ? (
         <Typography variant="body2" color="text.secondary">
           {description}
         </Typography>
-      )}
+      ) : null}
     </Box>
   );
 }

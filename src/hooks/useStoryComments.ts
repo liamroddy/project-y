@@ -27,8 +27,7 @@ export function useStoryComments(storyId?: number | null) {
           setComments(response);
         }
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : 'Unable to load comments';
+        const message = err instanceof Error ? err.message : 'Unable to load comments';
         if (!isCancelled) {
           setError(message);
           setComments([]);
