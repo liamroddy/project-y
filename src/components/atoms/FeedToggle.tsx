@@ -1,7 +1,7 @@
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { styled } from '@mui/material/styles';
-import type { StoryFeedType } from '../../types/hackerNews';
+import type { StoryFeedSort } from '../../types/hackerNews';
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
@@ -20,8 +20,8 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 }));
 
 interface FeedToggleProps {
-  value: StoryFeedType;
-  onChange: (next: StoryFeedType) => void;
+  value: StoryFeedSort;
+  onChange: (next: StoryFeedSort) => void;
 }
 
 export function FeedToggle({ value, onChange }: FeedToggleProps) {
@@ -31,7 +31,7 @@ export function FeedToggle({ value, onChange }: FeedToggleProps) {
       exclusive
       size="small"
       value={value}
-      onChange={(_, nextValue: StoryFeedType | null) => {
+      onChange={(_, nextValue: StoryFeedSort | null) => {
         if (nextValue) {
           onChange(nextValue);
         }

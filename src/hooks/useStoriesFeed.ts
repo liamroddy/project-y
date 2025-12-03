@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchStoriesBatch } from '../services/hackerNewsService';
-import type { Story, StoryFeedType } from '../types/hackerNews';
+import type { Story, StoryFeedSort } from '../types/hackerNews';
 
-export function useStoriesFeed(initialFeed: StoryFeedType = 'top') {
-  const [feedType, setFeedType] = useState<StoryFeedType>(initialFeed);
+export function useStoriesFeed(initialFeed: StoryFeedSort = 'top') {
+  // Lot of individual states - is this better as a reducer? TODO
+  const [feedType, setFeedType] = useState<StoryFeedSort>(initialFeed);
   const [stories, setStories] = useState<Story[]>([]);
   const [nextStart, setNextStart] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -27,7 +28,7 @@ export function useStoriesFeed(initialFeed: StoryFeedType = 'top') {
       setStories([]);
       setHasMore(false);
     } finally {
-      setIsInitializing(false);
+      setIsInitializing(false); 
     }
   }, [feedType]);
 
@@ -57,7 +58,7 @@ export function useStoriesFeed(initialFeed: StoryFeedType = 'top') {
     void refresh();
   }, [refresh]);
 
-  const handleFeedChange = useCallback((nextFeed: StoryFeedType) => {
+  const handleFeedChange = useCallback((nextFeed: StoryFeedSort) => {
     setFeedType(nextFeed);
   }, []);
 

@@ -1,8 +1,9 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useStoriesFeed } from '../../hooks/useStoriesFeed';
 import type { Story } from '../../types/hackerNews';
@@ -11,10 +12,12 @@ import { ErrorBanner } from '../atoms/ErrorBanner';
 import { LoadingState } from '../atoms/LoadingState';
 import { StoryCard } from './StoryCard';
 import { StoriesHeader } from './StoriesHeader';
+import { StoryCommentsPanel } from './StoryCommentsPanel';
 
 const SCROLL_CONTAINER_ID = 'stories-scroll-container';
 const ROW_HEIGHT = 170;
 const BUFFER_ROWS = 5;
+const PORTRAIT_CONTENT_WIDTH = 520;
 
 export function StoriesFeed() {
   const {
@@ -30,6 +33,9 @@ export function StoriesFeed() {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
+  const [selectedStoryId, setSelectedStoryId] = useState<number | null>(null);
+  const isLandscape = useMediaQuery('(orientation: landscape)');
+  const cardMode = isLandscape ? 'select' : 'link';
 
   useLayoutEffect(() => {
     const element = scrollContainerRef.current;
@@ -77,6 +83,16 @@ export function StoriesFeed() {
     }
   }, [feedType]);
 
+  useEffect(() => {
+    setSelectedStoryId(null);
+  }, [feedType]);
+
+  useEffect(() => {
+    if (!isLandscape && selectedStoryId != null) {
+      setSelectedStoryId(null);
+    }
+  }, [isLandscape, selectedStoryId]);
+
   const virtualizedStories = useMemo(() => {
     const totalHeight = stories.length * ROW_HEIGHT;
     const visibleRowCount =
@@ -92,6 +108,18 @@ export function StoriesFeed() {
 
     return { totalHeight, offsetY, visibleStories };
   }, [containerHeight, scrollTop, stories]);
+
+  const selectedStory = useMemo(() => {
+    if (selectedStoryId == null) {
+      return null;
+    }
+
+    return stories.find((story) => story.id === selectedStoryId) ?? null;
+  }, [selectedStoryId, stories]);
+
+  const handleStorySelect = useCallback((story: Story) => {
+    setSelectedStoryId(story.id);
+  }, []);
 
   const renderContent = () => {
     if (isInitializing) {
@@ -144,7 +172,13 @@ export function StoriesFeed() {
           >
             <Stack spacing={2.5}>
               {virtualizedStories.visibleStories.map((story: Story) => (
-                <StoryCard key={story.id} story={story} />
+                <StoryCard
+                  key={story.id}
+                  story={story}
+                  mode={cardMode}
+                  onSelect={isLandscape ? handleStorySelect : undefined}
+                  isActive={isLandscape && selectedStoryId === story.id}
+                />
               ))}
             </Stack>
           </Box>
@@ -164,10 +198,14 @@ export function StoriesFeed() {
     >
       <StoriesHeader feedType={feedType} onFeedChange={setFeedType} />
       <Container
-        maxWidth="md"
+        maxWidth={false}
         sx={{
+          width: '100%',
+          maxWidth: isLandscape ? 1600 : PORTRAIT_CONTENT_WIDTH,
+          mx: 'auto',
           pt: 3,
           pb: 6,
+          px: { xs: 2, sm: 3, lg: 4 },
           display: 'flex',
           flexDirection: 'column',
           height: 'calc(100vh - 80px)',
@@ -176,18 +214,53 @@ export function StoriesFeed() {
         {error && !isInitializing ? (
           <ErrorBanner message={error} />
         ) : null}
-        <Box
-          id={SCROLL_CONTAINER_ID}
-          ref={scrollContainerRef}
+        <Stack
+          direction={isLandscape ? 'row' : 'column'}
+          spacing={isLandscape ? 3 : 0}
           sx={{
             mt: 2,
             flexGrow: 1,
-            overflowY: 'auto',
-            pr: { xs: 0, sm: 1 },
+            minHeight: 0,
+            width: isLandscape ? '100%' : PORTRAIT_CONTENT_WIDTH,
+            maxWidth: '100%',
+            mx: isLandscape ? 0 : 'auto',
           }}
         >
-          {renderContent()}
-        </Box>
+          <Box
+            sx={{
+              flex: isLandscape ? '0 0 33.3333%' : '1 1 auto',
+              maxWidth: isLandscape ? '33.3333%' : '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0,
+              minWidth: 0,
+            }}
+          >
+            <Box
+              id={SCROLL_CONTAINER_ID}
+              ref={scrollContainerRef}
+              sx={{
+                flexGrow: 1,
+                overflowY: 'auto',
+                pr: { xs: 0, sm: 1 },
+              }}
+            >
+              {renderContent()}
+            </Box>
+          </Box>
+          {isLandscape ? (
+            <Box
+              sx={{
+                flex: '0 0 66.6667%',
+                maxWidth: '66.6667%',
+                minHeight: 0,
+                minWidth: 0,
+              }}
+            >
+              <StoryCommentsPanel story={selectedStory} />
+            </Box>
+          ) : null}
+        </Stack>
       </Container>
     </Box>
   );

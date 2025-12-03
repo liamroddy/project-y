@@ -3,12 +3,12 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import type { StoryFeedType } from '../../types/hackerNews';
+import type { StoryFeedSort } from '../../types/hackerNews';
 import { FeedToggle } from '../atoms/FeedToggle';
 
 interface StoriesHeaderProps {
-  feedType: StoryFeedType;
-  onFeedChange: (feed: StoryFeedType) => void;
+  feedType: StoryFeedSort;
+  onFeedChange: (feed: StoryFeedSort) => void;
 }
 
 export function StoriesHeader({ feedType, onFeedChange }: StoriesHeaderProps) {

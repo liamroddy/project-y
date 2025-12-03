@@ -1,10 +1,17 @@
-import type { StoriesBatch, Story, StoryFeedType } from '../types/hackerNews';
+import type {
+  Comment,
+  CommentNode,
+  StoriesBatch,
+  Story,
+  StoryFeedSort,
+} from '../types/hackerNews';
 
 const API_BASE = 'https://hacker-news.firebaseio.com/v0';
 const PAGE_SIZE = 20;
 
 const storyCache = new Map<number, Story>();
-const idCache = new Map<StoryFeedType, number[]>();
+const idCache = new Map<StoryFeedSort, number[]>();
+const commentCache = new Map<number, Comment | null>();
 
 async function fetchJson<T>(endpoint: string): Promise<T> {
   const response = await fetch(`${API_BASE}/${endpoint}.json`);
@@ -29,7 +36,7 @@ function extractDomain(url?: string): string | undefined {
   }
 }
 
-async function getStoryIds(feed: StoryFeedType): Promise<number[]> {
+async function getStoryIds(feed: StoryFeedSort): Promise<number[]> {
   if (idCache.has(feed)) {
     return idCache.get(feed)!;
   }
@@ -55,8 +62,43 @@ async function loadStory(id: number): Promise<Story> {
   return storyWithDomain;
 }
 
+async function loadComment(id: number): Promise<Comment | null> {
+  if (commentCache.has(id)) {
+    return commentCache.get(id) ?? null;
+  }
+
+  const comment = await fetchJson<Comment>(`item/${id}`);
+  commentCache.set(id, comment);
+  return comment;
+}
+
+async function buildCommentTree(ids?: number[]): Promise<CommentNode[]> {
+  if (!ids?.length) {
+    return [];
+  }
+
+  const nodes: Array<CommentNode | null> = await Promise.all(
+    ids.map(async (commentId) => {
+      const comment = await loadComment(commentId);
+
+      if (!comment || comment.deleted || comment.dead || comment.type !== 'comment') {
+        return null;
+      }
+
+      const children = await buildCommentTree(comment.kids);
+      const enrichedComment: CommentNode = {
+        ...comment,
+        children,
+      };
+      return enrichedComment;
+    }),
+  );
+
+  return nodes.filter((node): node is CommentNode => node !== null);
+}
+
 export async function fetchStoriesBatch(
-  feed: StoryFeedType,
+  feed: StoryFeedSort,
   start = 0,
   limit = PAGE_SIZE,
 ): Promise<StoriesBatch> {
@@ -73,7 +115,12 @@ export async function fetchStoriesBatch(
   };
 }
 
-export function invalidateFeed(feed?: StoryFeedType) {
+export async function fetchStoryComments(storyId: number): Promise<CommentNode[]> {
+  const story = await loadStory(storyId);
+  return buildCommentTree(story.kids);
+}
+
+export function invalidateFeed(feed?: StoryFeedSort) {
   if (feed) {
     idCache.delete(feed);
     return;
