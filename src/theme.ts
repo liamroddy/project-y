@@ -1,5 +1,11 @@
 import { createTheme } from '@mui/material/styles';
 
+declare module '@mui/material/styles' {
+  interface TypeBackground {
+    header: string;
+  }
+}
+
 export const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -8,7 +14,8 @@ export const theme = createTheme({
     },
     background: {
       default: '#0f172a',
-      paper: '#1c1f2b',
+      paper: '#101116',
+      header: '#0c0e19',
     },
   },
   typography: {
