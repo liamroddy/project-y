@@ -34,10 +34,10 @@ export function StoriesHeader({ feedType, onFeedChange }: StoriesHeaderProps) {
           >
             <div>
               <Typography variant="h4" component="h1">
-                Hacker News+
+                Hacker News++
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                A focused reading experience for modern front-end engineers.
+                A modern Hacker News front-end.
               </Typography>
             </div>
             <FeedToggle value={feedType} onChange={onFeedChange} />
