@@ -1,4 +1,4 @@
-import { StoriesFeed } from './components/organisms/StoriesFeed';
+import { StoriesFeed } from './components/templates/StoriesFeed';
 
 function App() {
   return <StoriesFeed />;

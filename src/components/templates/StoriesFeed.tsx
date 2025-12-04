@@ -14,9 +14,9 @@ import type { Story } from '../../types/hackerNews';
 import { EmptyState } from '../atoms/EmptyState';
 import { ErrorBanner } from '../atoms/ErrorBanner';
 import { LoadingState } from '../atoms/LoadingState';
-import { StoriesHeader } from './StoriesHeader';
-import { StoryCard } from './StoryCard';
-import { StoryCommentsPanel } from './StoryCommentsPanel';
+import { StoriesHeader } from '../organisms/StoriesHeader';
+import { StoryCard } from '../organisms/StoryCard';
+import { StoryCommentsPanel } from '../organisms/StoryCommentsPanel';
 import { theme } from '../../theme';
 
 const SCROLL_CONTAINER_ID = 'stories-scroll-container';
