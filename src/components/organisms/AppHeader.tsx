@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import type { StoryFeedSort } from '../../types/hackerNews';
 import { FeedToggle } from '../atoms/FeedToggle';
 
-interface StoriesHeaderProps {
+interface AppHeader {
   feedType: StoryFeedSort;
   onFeedChange: (feed: StoryFeedSort) => void;
 }
@@ -37,7 +37,7 @@ function renderYLogo() {
   );
 }
 
-export function StoriesHeader({ feedType, onFeedChange }: StoriesHeaderProps) {
+export function StoriesHeader({ feedType, onFeedChange }: AppHeader) {
   return (
     <AppBar
       position="sticky"

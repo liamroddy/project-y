@@ -14,7 +14,7 @@ import type { Story } from '../../types/hackerNews';
 import { EmptyState } from '../atoms/EmptyState';
 import { ErrorBanner } from '../atoms/ErrorBanner';
 import { LoadingState } from '../atoms/LoadingState';
-import { StoriesHeader } from '../organisms/StoriesHeader';
+import { AppHeader } from '../organisms/AppHeader';
 import { StoryCard } from '../organisms/StoryCard';
 import { StoryCommentsPanel } from '../organisms/StoryCommentsPanel';
 import { theme } from '../../theme';
@@ -113,7 +113,7 @@ export function StoriesFeed() {
     setSelectedStoryId(story.id);
   }, []);
 
-  const renderContent = () => {
+  const renderFeed = () => {
     if (isInitializing) {
       return <LoadingState label="Loading the latest stories…" />;
     }
@@ -184,7 +184,7 @@ export function StoriesFeed() {
         color: 'text.primary',
       }}
     >
-      <StoriesHeader feedType={feedType} onFeedChange={setFeedType} />
+      <AppHeader feedType={feedType} onFeedChange={setFeedType} />
       <Container
         maxWidth={false}
         sx={{
@@ -229,7 +229,7 @@ export function StoriesFeed() {
                 pr: { xs: 0, sm: 1 },
               }}
             >
-              {renderContent()}
+              {renderFeed()}
             </Box>
           </Box>
           {isLandscape ? (
