@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import DOMPurify from 'dompurify';
+import { useMemo } from 'react';
 import type { CommentNode } from '../../types/hackerNews';
 import { formatRelativeTime } from '../../utils/time';
 
@@ -11,6 +13,31 @@ interface StoryCommentProps {
 
 export function StoryComment({ comment, depth = 0 }: StoryCommentProps) {
   const author = comment.by ?? 'anonymous';
+
+  const sanitizedComment = useMemo(() => {
+    if (!comment.text) {
+      return '';
+    }
+
+    return DOMPurify.sanitize(comment.text, {
+      ALLOWED_TAGS: [
+        'a',
+        'blockquote',
+        'br',
+        'code',
+        'em',
+        'i',
+        'li',
+        'ol',
+        'p',
+        'pre',
+        'strong',
+        'ul',
+      ],
+      ALLOWED_ATTR: ['href', 'rel', 'target', 'title'],
+      USE_PROFILES: { html: true },
+    });
+  }, [comment.text]);
 
   return (
     <Box
@@ -42,7 +69,7 @@ export function StoryComment({ comment, depth = 0 }: StoryCommentProps) {
             },
             '& a': { color: 'primary.light' },
           }}
-          dangerouslySetInnerHTML={{ __html: comment.text }}
+          dangerouslySetInnerHTML={{ __html: sanitizedComment }}
         />
       ) : (
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
