@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import type { Story } from '../../types/hackerNews';
 
 import { EmptyState } from '../atoms/EmptyState';
-import { StoryCommentSection } from './StoryCommentSection';
+import { StoryCommentSection } from '../organisms/StoryCommentSection';
 
 interface StoryCommentsPanelProps {
   story: Story | null;

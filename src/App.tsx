@@ -1,7 +1,7 @@
-import { StoriesFeed } from './components/templates/StoriesFeed';
+import { FrontPage } from './components/templates/FrontPage';
 
 function App() {
-  return <StoriesFeed />;
+  return <FrontPage />;
 }
 
 export default App;
