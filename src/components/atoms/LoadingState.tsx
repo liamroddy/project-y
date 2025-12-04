@@ -6,7 +6,7 @@ interface LoadingStateProps {
   label?: string;
 }
 
-export function LoadingState({ label = 'Loading stories…' }: LoadingStateProps) {
+export function LoadingState({ label = 'Loading…' }: LoadingStateProps) {
   return (
     <Box
       sx={{
