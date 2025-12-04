@@ -1,51 +1,22 @@
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+
 import { fetchStoryComments } from '../services/hackerNewsService';
 import type { CommentNode } from '../types/hackerNews';
 
-// TODO still a hook?
+type StoryCommentsKey = readonly ['story-comments', number];
+
 export function useStoryComments(storyId?: number | null) {
-  const [comments, setComments] = useState<CommentNode[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const shouldFetch = storyId != null;
+  const key: StoryCommentsKey | null = shouldFetch ? ['story-comments', storyId] : null;
 
-  useEffect(() => {
-    let isCancelled = false;
+  const { data, error, isLoading, isValidating } = useSWR<CommentNode[], Error>(
+    key,
+    ([, id]: StoryCommentsKey) => fetchStoryComments(id),
+  );
 
-    if (!storyId) {
-      setComments([]);
-      setError(null);
-      setIsLoading(false);
-      return;
-    }
-
-    const loadComments = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetchStoryComments(storyId);
-        if (!isCancelled) {
-          setComments(response);
-        }
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Unable to load comments';
-        if (!isCancelled) {
-          setError(message);
-          setComments([]);
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadComments();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [storyId]);
-
-  return { comments, isLoading, error };
+  return {
+    comments: shouldFetch && data ? data : [],
+    isLoading: shouldFetch ? isLoading || (!data && isValidating) : false,
+    error: error?.message ?? null,
+  };
 }

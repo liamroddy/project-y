@@ -3,18 +3,67 @@ import type { Comment, CommentNode, StoriesBatch, Story, StoryFeedSort } from '.
 const API_BASE = 'https://hacker-news.firebaseio.com/v0';
 const PAGE_SIZE = 20;
 
-const storyCache = new Map<number, Story | null>();
-const idCache = new Map<StoryFeedSort, number[]>();
-const commentCache = new Map<number, Comment | null>();
+export class HackerNewsApiError extends Error {
+  readonly status?: number;
+  readonly endpoint: string;
 
-async function fetchJson<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${API_BASE}/${endpoint}.json`);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${endpoint}: ${String(response.status)}`);
+  constructor(endpoint: string, status?: number, message?: string, options?: ErrorOptions) {
+    const fallback = status
+      ? `Hacker News request failed (${String(status)})`
+      : 'Hacker News request failed';
+    super(message ?? fallback, options);
+    this.name = 'HackerNewsApiError';
+    this.endpoint = endpoint;
+    this.status = status;
   }
+}
 
-  return response.json() as Promise<T>;
+export class HackerNewsRequestAbortedError extends Error {
+  readonly endpoint: string;
+
+  constructor(endpoint: string, options?: ErrorOptions) {
+    super(`Hacker News request aborted: ${endpoint}`, options);
+    this.name = 'HackerNewsRequestAbortedError';
+    this.endpoint = endpoint;
+  }
+}
+
+interface FetchOptions {
+  signal?: AbortSignal;
+}
+
+interface StoriesBatchOptions extends FetchOptions {
+  ids?: number[];
+}
+
+async function fetchJson<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
+  const { signal } = options;
+  const resource = `${API_BASE}/${endpoint}.json`;
+
+  try {
+    const response = await fetch(resource, { signal });
+
+    if (!response.ok) {
+      throw new HackerNewsApiError(endpoint, response.status);
+    }
+
+    const payload = (await response.json()) as T;
+    return payload;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new HackerNewsRequestAbortedError(endpoint, { cause: error });
+    }
+
+    if (error instanceof HackerNewsApiError) {
+      throw error;
+    }
+
+    if (error instanceof Error) {
+      throw new HackerNewsApiError(endpoint, undefined, error.message, { cause: error });
+    }
+
+    throw error;
+  }
 }
 
 function extractDomain(url?: string): string | undefined {
@@ -30,27 +79,23 @@ function extractDomain(url?: string): string | undefined {
   }
 }
 
-async function getStoryIds(feed: StoryFeedSort): Promise<number[]> {
-  if (idCache.has(feed)) {
-    const cached = idCache.get(feed);
-    if (cached) return cached;
-  }
-
+async function getStoryIds(feed: StoryFeedSort, options?: FetchOptions): Promise<number[]> {
   const endpoint = feed === 'top' ? 'topstories' : 'newstories';
-  const ids = await fetchJson<number[]>(endpoint);
-  idCache.set(feed, ids);
+  const ids = await fetchJson<number[]>(endpoint, options);
   return ids;
 }
 
-async function loadStory(id: number): Promise<Story | null> {
-  if (storyCache.has(id)) {
-    return storyCache.get(id) ?? null;
-  }
+export async function fetchStoryIds(
+  feed: StoryFeedSort,
+  options?: FetchOptions,
+): Promise<number[]> {
+  return getStoryIds(feed, options);
+}
 
-  const rawStory = await fetchJson<Story | null>(`item/${String(id)}`);
+async function loadStory(id: number, options?: FetchOptions): Promise<Story | null> {
+  const rawStory = await fetchJson<Story | null>(`item/${String(id)}`, options);
 
   if (rawStory?.type !== 'story') {
-    storyCache.set(id, null);
     return null;
   }
 
@@ -59,34 +104,32 @@ async function loadStory(id: number): Promise<Story | null> {
     domain: extractDomain(rawStory.url),
   };
 
-  storyCache.set(id, storyWithDomain);
   return storyWithDomain;
 }
 
-async function loadComment(id: number): Promise<Comment | null> {
-  if (commentCache.has(id)) {
-    return commentCache.get(id) ?? null;
+async function loadComment(id: number, options?: FetchOptions): Promise<Comment | null> {
+  const comment = await fetchJson<Comment | Story | null>(`item/${String(id)}`, options);
+  if (comment?.type !== 'comment') {
+    return null;
   }
 
-  const comment = await fetchJson<Comment>(`item/${String(id)}`);
-  commentCache.set(id, comment);
   return comment;
 }
 
-async function buildCommentTree(ids?: number[]): Promise<CommentNode[]> {
+async function buildCommentTree(ids?: number[], options?: FetchOptions): Promise<CommentNode[]> {
   if (!ids?.length) {
     return [];
   }
 
   const nodes: (CommentNode | null)[] = await Promise.all(
     ids.map(async (commentId) => {
-      const comment = await loadComment(commentId);
+      const comment = await loadComment(commentId, options);
 
       if (!comment || comment.deleted || comment.dead) {
         return null;
       }
 
-      const children = await buildCommentTree(comment.kids);
+      const children = await buildCommentTree(comment.kids, options);
       const enrichedComment: CommentNode = {
         ...comment,
         children,
@@ -102,11 +145,13 @@ export async function fetchStoriesBatch(
   feed: StoryFeedSort,
   start = 0,
   limit = PAGE_SIZE,
+  options?: StoriesBatchOptions,
 ): Promise<StoriesBatch> {
-  const ids = await getStoryIds(feed);
+  const { ids: providedIds, ...fetchOptions } = options ?? {};
+  const ids = providedIds ?? (await getStoryIds(feed, fetchOptions));
   const slice = ids.slice(start, start + limit);
 
-  const stories = (await Promise.all(slice.map((id) => loadStory(id)))).filter(
+  const stories = (await Promise.all(slice.map((id) => loadStory(id, fetchOptions)))).filter(
     (story): story is Story => story !== null,
   );
 
@@ -118,20 +163,14 @@ export async function fetchStoriesBatch(
   };
 }
 
-export async function fetchStoryComments(storyId: number): Promise<CommentNode[]> {
-  const story = await loadStory(storyId);
+export async function fetchStoryComments(
+  storyId: number,
+  options?: FetchOptions,
+): Promise<CommentNode[]> {
+  const story = await loadStory(storyId, options);
   if (!story) {
     return [];
   }
 
-  return buildCommentTree(story.kids);
-}
-
-export function invalidateFeed(feed?: StoryFeedSort) {
-  if (feed) {
-    idCache.delete(feed);
-    return;
-  }
-
-  idCache.clear();
+  return buildCommentTree(story.kids, options);
 }
