@@ -4,6 +4,7 @@
     "target": "ES2022",
     "lib": ["ES2022", "DOM"],
     "jsx": "react-jsx",
+    "types": ["vite/client", "jest"],
     "moduleDetection": "force",
     "noEmit": true
   },
