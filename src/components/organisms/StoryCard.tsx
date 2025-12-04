@@ -8,8 +8,9 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+
 import type { Story } from '../../types/hackerNews';
-import { StoryMeta } from '../molecules/StoryMeta';
+import { StoryChipContainer } from '../molecules/StoryChipContainer';
 
 interface StoryCardProps {
   story: Story;
@@ -84,7 +85,7 @@ export function StoryCard({ story, mode = 'link', onSelect, isActive = false }: 
                 sx={{ alignSelf: 'flex-start' }}
               />
             )}
-            <StoryMeta story={story} />
+            <StoryChipContainer story={story} />
           </Stack>
         </CardContent>
       </CardActionArea>

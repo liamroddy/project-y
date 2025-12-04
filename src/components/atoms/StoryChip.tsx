@@ -1,11 +1,11 @@
 import Chip from '@mui/material/Chip';
 import type { ChipProps } from '@mui/material/Chip';
 
-interface StoryMetaItemProps extends Pick<ChipProps, 'icon'> {
+interface StoryChipProps extends Pick<ChipProps, 'icon'> {
   label: string;
 }
 
-export function StoryMetaItem({ label, icon }: StoryMetaItemProps) {
+export function StoryChip({ label, icon }: StoryChipProps) {
   return (
     <Chip
       size="small"
