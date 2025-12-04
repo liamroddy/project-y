@@ -14,7 +14,7 @@ import { ErrorBanner } from '../atoms/ErrorBanner';
 import { LoadingState } from '../atoms/LoadingState';
 import { StoryComment } from '../molecules/StoryComment';
 
-export interface StoryCommentSectionProps {
+interface StoryCommentSectionProps {
   story: Story;
 }
 

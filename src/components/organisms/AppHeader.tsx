@@ -37,7 +37,7 @@ function renderYLogo() {
   );
 }
 
-export function StoriesHeader({ feedType, onFeedChange }: AppHeader) {
+export function AppHeader({ feedType, onFeedChange }: AppHeader) {
   return (
     <AppBar
       position="sticky"

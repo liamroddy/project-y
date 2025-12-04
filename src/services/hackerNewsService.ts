@@ -107,7 +107,7 @@ export async function fetchStoriesBatch(
   const slice = ids.slice(start, start + limit);
 
   const stories = (await Promise.all(slice.map((id) => loadStory(id)))).filter(
-    (story): story is Story => (story !== null),
+    (story): story is Story => story !== null,
   );
 
   const nextStart = start + slice.length;
