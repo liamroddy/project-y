@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchStoryComments } from '../services/hackerNewsService';
 import type { CommentNode } from '../types/hackerNews';
 
+// TODO still a hook?
 export function useStoryComments(storyId?: number | null) {
   const [comments, setComments] = useState<CommentNode[]>([]);
   const [isLoading, setIsLoading] = useState(false);

@@ -5,6 +5,7 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { alpha } from '@mui/material/styles';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { useStoriesFeed } from '../../hooks/useStoriesFeed';
@@ -16,11 +17,12 @@ import { LoadingState } from '../atoms/LoadingState';
 import { StoriesHeader } from './StoriesHeader';
 import { StoryCard } from './StoryCard';
 import { StoryCommentsPanel } from './StoryCommentsPanel';
+import { theme } from '../../theme';
 
 const SCROLL_CONTAINER_ID = 'stories-scroll-container';
-const ROW_HEIGHT = 170;
+const ROW_HEIGHT = 170; // px
 const BUFFER_ROWS = 5;
-const PORTRAIT_CONTENT_WIDTH = 520;
+
 export function StoriesFeed() {
   const { feedType, setFeedType, stories, hasMore, isInitializing, error, loadMore } =
     useStoriesFeed('top');
@@ -33,21 +35,22 @@ export function StoriesFeed() {
   const cardMode = isLandscape ? 'select' : 'link';
 
   useLayoutEffect(() => {
-    const element = scrollContainerRef.current;
-    if (!element) {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
       return;
     }
 
     const updateHeight = () => {
-      setContainerHeight(element.clientHeight);
+      setContainerHeight(scrollContainer.clientHeight);
     };
 
     updateHeight();
 
+    // TODO concern with render churn here? consider debounce
     const resizeObserver = new ResizeObserver(() => {
       updateHeight();
     });
-    resizeObserver.observe(element);
+    resizeObserver.observe(scrollContainer);
 
     return () => {
       resizeObserver.disconnect();
@@ -55,30 +58,28 @@ export function StoriesFeed() {
   }, []);
 
   useEffect(() => {
-    const element = scrollContainerRef.current;
-    if (!element) {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
       return;
     }
-
     const handleScroll = () => {
-      setScrollTop(element.scrollTop);
+      setScrollTop(scrollContainer.scrollTop);
     };
 
-    element.addEventListener('scroll', handleScroll);
+    scrollContainer.addEventListener('scroll', handleScroll);
     return () => {
-      element.removeEventListener('scroll', handleScroll);
+      scrollContainer.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
   useEffect(() => {
-    // Reset scroll position when feed changes
-    const element = scrollContainerRef.current;
-    if (element) {
-      element.scrollTo({ top: 0, behavior: 'smooth' });
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
+      return;
     }
-  }, [feedType]);
+    scrollContainer.scrollTop = 0;
 
-  useEffect(() => {
+    setScrollTop(0);
     setSelectedStoryId(null);
   }, [feedType]);
 
@@ -128,14 +129,16 @@ export function StoriesFeed() {
 
     return (
       <InfiniteScroll
+        key={feedType}
         dataLength={stories.length}
         next={() => {
           void loadMore();
         }}
         hasMore={hasMore}
+        scrollThreshold={0.8} // trigger loadMore when 80% scrolled
         loader={<LoadingState label="Loading additional stories…" />}
         scrollableTarget={SCROLL_CONTAINER_ID}
-        style={{ overflow: 'visible' }}
+        style={{ overflow: 'visible' }} // keep child layout intact; container handles scrolling
         endMessage={
           <Typography variant="body2" color="text.secondary" textAlign="center" py={3}>
             You are all caught up.
@@ -177,7 +180,7 @@ export function StoriesFeed() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(180deg, rgba(15,23,42,1) 0%, rgba(15,23,42,0.9) 100%)',
+        background: `linear-gradient(180deg, ${theme.palette.background.default} 0%, ${alpha(theme.palette.background.default, 0.9)} 100%)`,
         color: 'text.primary',
       }}
     >
@@ -186,7 +189,6 @@ export function StoriesFeed() {
         maxWidth={false}
         sx={{
           width: '100%',
-          maxWidth: isLandscape ? 1600 : PORTRAIT_CONTENT_WIDTH,
           mx: 'auto',
           pt: 3,
           pb: 6,
@@ -204,15 +206,14 @@ export function StoriesFeed() {
             mt: 2,
             flexGrow: 1,
             minHeight: 0,
-            width: isLandscape ? '100%' : PORTRAIT_CONTENT_WIDTH,
-            maxWidth: '100%',
+            width: '100%',
             mx: isLandscape ? 0 : 'auto',
           }}
         >
           <Box
             sx={{
-              flex: isLandscape ? '0 0 33.3333%' : '1 1 auto',
-              maxWidth: isLandscape ? '33.3333%' : '100%',
+              flex: isLandscape ? '0 0 33%' : '1 1 auto',
+              maxWidth: isLandscape ? '33%' : '100%',
               display: 'flex',
               flexDirection: 'column',
               minHeight: 0,
@@ -234,8 +235,8 @@ export function StoriesFeed() {
           {isLandscape ? (
             <Box
               sx={{
-                flex: '0 0 66.6667%',
-                maxWidth: '66.6667%',
+                flex: '0 0 67%',
+                maxWidth: '67%',
                 minHeight: 0,
                 minWidth: 0,
               }}

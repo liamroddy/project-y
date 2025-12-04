@@ -3,7 +3,7 @@ import type { Comment, CommentNode, StoriesBatch, Story, StoryFeedSort } from '.
 const API_BASE = 'https://hacker-news.firebaseio.com/v0';
 const PAGE_SIZE = 20;
 
-const storyCache = new Map<number, Story>();
+const storyCache = new Map<number, Story | null>();
 const idCache = new Map<StoryFeedSort, number[]>();
 const commentCache = new Map<number, Comment | null>();
 
@@ -42,13 +42,18 @@ async function getStoryIds(feed: StoryFeedSort): Promise<number[]> {
   return ids;
 }
 
-async function loadStory(id: number): Promise<Story> {
+async function loadStory(id: number): Promise<Story | null> {
   if (storyCache.has(id)) {
-    const cached = storyCache.get(id);
-    if (cached) return cached;
+    return storyCache.get(id) ?? null;
   }
 
-  const rawStory = await fetchJson<Story>(`item/${String(id)}`);
+  const rawStory = await fetchJson<Story | null>(`item/${String(id)}`);
+
+  if (rawStory?.type !== 'story') {
+    storyCache.set(id, null);
+    return null;
+  }
+
   const storyWithDomain: Story = {
     ...rawStory,
     domain: extractDomain(rawStory.url),
@@ -101,7 +106,9 @@ export async function fetchStoriesBatch(
   const ids = await getStoryIds(feed);
   const slice = ids.slice(start, start + limit);
 
-  const stories = await Promise.all(slice.map((id) => loadStory(id)));
+  const stories = (await Promise.all(slice.map((id) => loadStory(id)))).filter(
+    (story): story is Story => (story !== null),
+  );
 
   const nextStart = start + slice.length;
   return {
@@ -113,6 +120,10 @@ export async function fetchStoriesBatch(
 
 export async function fetchStoryComments(storyId: number): Promise<CommentNode[]> {
   const story = await loadStory(storyId);
+  if (!story) {
+    return [];
+  }
+
   return buildCommentTree(story.kids);
 }
 
