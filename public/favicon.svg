@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="Project Y Favicon" role="img">
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="#ff7139"/>
+  <path fill="#0f172a" d="
+    M12 10
+    h8
+    l12 17
+    l12 -17
+    h8
+    l-14 21
+    v22
+    h-10
+    v-22
+    L12 10
+    z"/>
+</svg>
