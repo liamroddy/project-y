@@ -1,8 +1,10 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+
 import DOMPurify from 'dompurify';
 import { useMemo } from 'react';
+
 import type { CommentNode } from '../../types/hackerNews';
 import { formatRelativeTime } from '../../utils/time';
 

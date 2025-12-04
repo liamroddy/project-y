@@ -3,6 +3,15 @@ const config = {
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
   testMatch: ['**/__tests__/**/*.test.ts'],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/main.tsx',
+    '!src/main.ts',
+    '!src/vite-env.d.ts',
+    '!src/**/__tests__/**',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
   watchman: false,
   transform: {
     '^.+\\.tsx?$': [

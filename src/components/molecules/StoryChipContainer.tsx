@@ -1,8 +1,10 @@
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+
 import type { Story } from '../../types/hackerNews';
 import { formatRelativeTime } from '../../utils/time';
 import { StoryChip } from '../atoms/StoryChip';

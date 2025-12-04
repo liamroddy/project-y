@@ -13,5 +13,10 @@ The dev server prints a local URL you can open in your browser. Build for produc
 
 ## Code quality
 
-- `npm run lint` runs ESLint with strict TypeScript + React 19 rules tuned for 2025 best practices.
+- `npm run lint` runs ESLint with strict TypeScript + React 19 rules.
 - `npm run format` (and `npm run format:check`) use Prettier 3 to keep the codebase consistently styled.
+
+## Tests and coverage
+
+- `npm run test` executes the Jest suite.
+- `npm run test:coverage` runs the tests with Sonar check for coverage.
