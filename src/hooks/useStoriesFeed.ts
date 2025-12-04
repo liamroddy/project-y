@@ -1,74 +1,78 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import useSWRInfinite from 'swr/infinite';
+
 import { fetchStoriesBatch } from '../services/hackerNewsService';
-import type { Story, StoryFeedSort } from '../types/hackerNews';
+import type { StoriesBatch, StoryFeedSort } from '../types/hackerNews';
+
+type StoriesKey = readonly ['stories', StoryFeedSort, number];
 
 export function useStoriesFeed(initialFeed: StoryFeedSort = 'top') {
-  // Lot of individual states - is this better as a reducer? TODO
-  const [feedType, setFeedType] = useState<StoryFeedSort>(initialFeed);
-  const [stories, setStories] = useState<Story[]>([]);
-  const [nextStart, setNextStart] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [feedType, setFeedTypeState] = useState<StoryFeedSort>(initialFeed);
 
-  const refresh = useCallback(async () => {
-    setIsInitializing(true);
-    setError(null);
+  const getKey = useCallback(
+    (pageIndex: number, previousPageData: StoriesBatch | null): StoriesKey | null => {
+      if (previousPageData && !previousPageData.hasMore) {
+        return null;
+      }
 
-    try {
-      const batch = await fetchStoriesBatch(feedType, 0);
-      setStories(batch.stories);
-      setNextStart(batch.nextStart);
-      setHasMore(batch.hasMore);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unable to fetch stories';
-      setError(message);
-      setStories([]);
-      setHasMore(false);
-    } finally {
-      setIsInitializing(false);
-    }
-  }, [feedType]);
+      if (pageIndex === 0) {
+        return ['stories', feedType, 0];
+      }
+
+      if (!previousPageData) {
+        return null;
+      }
+
+      return ['stories', feedType, previousPageData.nextStart];
+    },
+    [feedType],
+  );
+
+  const fetcher = useCallback(
+    async ([, currentFeed, start]: StoriesKey) => fetchStoriesBatch(currentFeed, start),
+    [],
+  );
+
+  const { data, error, setSize, isLoading, isValidating, mutate } = useSWRInfinite<
+    StoriesBatch,
+    Error
+  >(getKey, fetcher);
+
+  const stories = data?.flatMap((page) => page.stories) ?? [];
+  const hasMore = data?.[data.length - 1]?.hasMore ?? false;
+  const isInitializing = isLoading;
+  const isFetchingMore = isValidating && Boolean(data?.length);
 
   const loadMore = useCallback(async () => {
-    if (isInitializing || isFetchingMore || !hasMore) {
+    if (!hasMore || isFetchingMore) {
       return;
     }
 
-    setIsFetchingMore(true);
-    setError(null);
+    await setSize((current) => current + 1);
+  }, [hasMore, isFetchingMore, setSize]);
 
-    try {
-      const batch = await fetchStoriesBatch(feedType, nextStart);
-      setStories((current) => [...current, ...batch.stories]);
-      setNextStart(batch.nextStart);
-      setHasMore(batch.hasMore);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unable to fetch more stories';
-      setError(message);
-    } finally {
-      setIsFetchingMore(false);
-    }
-  }, [feedType, hasMore, isFetchingMore, isInitializing, nextStart]);
+  const refresh = useCallback(async () => {
+    await setSize(1);
+    await mutate();
+  }, [mutate, setSize]);
 
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
-
-  const handleFeedChange = useCallback((nextFeed: StoryFeedSort) => {
-    setFeedType(nextFeed);
-  }, []);
+  const handleFeedChange = useCallback(
+    (nextFeed: StoryFeedSort) => {
+      setFeedTypeState(nextFeed);
+      void setSize(1);
+    },
+    [setSize],
+  );
 
   return {
     feedType,
+    setFeedType: handleFeedChange,
     stories,
     hasMore,
     isInitializing,
     isFetchingMore,
     error,
     loadMore,
-    setFeedType: handleFeedChange,
     refresh,
   };
 }

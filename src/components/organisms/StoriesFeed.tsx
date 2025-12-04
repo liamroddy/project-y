@@ -1,24 +1,26 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import InfiniteScroll from 'react-infinite-scroll-component';
+
 import { useStoriesFeed } from '../../hooks/useStoriesFeed';
 import type { Story } from '../../types/hackerNews';
+
 import { EmptyState } from '../atoms/EmptyState';
 import { ErrorBanner } from '../atoms/ErrorBanner';
 import { LoadingState } from '../atoms/LoadingState';
-import { StoryCard } from './StoryCard';
 import { StoriesHeader } from './StoriesHeader';
+import { StoryCard } from './StoryCard';
 import { StoryCommentsPanel } from './StoryCommentsPanel';
 
 const SCROLL_CONTAINER_ID = 'stories-scroll-container';
 const ROW_HEIGHT = 170;
 const BUFFER_ROWS = 5;
 const PORTRAIT_CONTENT_WIDTH = 520;
-
 export function StoriesFeed() {
   const { feedType, setFeedType, stories, hasMore, isInitializing, error, loadMore } =
     useStoriesFeed('top');
