@@ -6,7 +6,7 @@ import DOMPurify from 'dompurify';
 import { useMemo } from 'react';
 
 import type { CommentNode } from '../../types/hackerNews';
-import { formatRelativeTime } from '../../utils/time';
+import { CommentHeader } from '../atoms/CommentHeader';
 
 interface StoryCommentProps {
   comment: CommentNode;
@@ -49,12 +49,7 @@ export function StoryComment({ comment, depth = 0 }: StoryCommentProps) {
         borderColor: 'divider',
       }}
     >
-      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-        {author}
-        <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 1 }}>
-          {formatRelativeTime(comment.time)}
-        </Typography>
-      </Typography>
+      <CommentHeader author={author} time={comment.time} />
       {comment.text ? (
         <Typography
           variant="body2"

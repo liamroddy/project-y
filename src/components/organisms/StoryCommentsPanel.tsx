@@ -23,11 +23,11 @@ const COMMENTS_SCROLL_CONTAINER_ID = 'story-comments-scroll-container';
 
 export function StoryCommentsPanel({ story }: StoryCommentsPanelProps) {
   const { comments, error, hasMore, isLoadingInitial, isValidating, loadMore, resolvedCount } =
-  useStoryComments(story);
+    useStoryComments(story);
   const totalThreads = story?.kids?.length ?? 0;
   const shouldShowLoading =
     !error && (isLoadingInitial || (isValidating && comments.length === 0 && hasMore));
-  
+
   if (!story) {
     return (
       <Box
