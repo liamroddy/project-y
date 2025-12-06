@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWRInfinite from 'swr/infinite';
 
 import { fetchStoriesBatch, fetchStoryIds } from '../services/hackerNewsService';
@@ -71,6 +71,14 @@ export function useStoriesFeed(initialFeed: StoryFeedSort = 'top') {
     StoriesBatch,
     Error
   >(getKey, fetcher);
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    console.error(`Failed to load Hacker News stories feed (${feedType})`, error);
+  }, [error, feedType]);
 
   const stories = useMemo(() => {
     if (!data) {

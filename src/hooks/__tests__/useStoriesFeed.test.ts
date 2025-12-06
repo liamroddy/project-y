@@ -163,4 +163,36 @@ describe('useStoriesFeed', () => {
 
     expect(mockFetchStoryIds).toHaveBeenCalledTimes(2);
   });
+
+  describe('error logging', () => {
+    let originalConsoleError: typeof console.error;
+
+    beforeEach(() => {
+      originalConsoleError = console.error;
+      console.error = jest.fn();
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+    });
+
+    it('logs an error when the feed has an error', () => {
+      const error = new Error('boom');
+      setupSWR({ error });
+
+      renderHook(() => useStoriesFeed('top'));
+
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to load Hacker News stories feed (top)'),
+        error
+      );
+    });
+
+    it('does not log when there is no error', () => {
+      setupSWR({});
+      renderHook(() => useStoriesFeed('top'));
+      expect(console.error).not.toHaveBeenCalled();
+    });
+  });
 });
