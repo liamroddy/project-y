@@ -10,7 +10,7 @@ import { useStoriesFeed } from '../../hooks/useStoriesFeed';
 import type { Story } from '../../types/hackerNews';
 
 import { ErrorBanner } from '../atoms/ErrorBanner';
-import { FeedToggle } from '../atoms/FeedToggle';
+import { FeedToggle } from '../molecules/FeedToggle';
 import { AppHeader } from '../organisms/AppHeader';
 import { StoryCommentsPanel } from '../organisms/StoryCommentsPanel';
 import { StoryFeed } from '../organisms/StoryFeed';
