@@ -1,9 +1,5 @@
 import { jest } from '@jest/globals';
-import type {
-  SWRInfiniteFetcher,
-  SWRInfiniteKeyLoader,
-  SWRInfiniteResponse,
-} from 'swr/infinite';
+import type { SWRInfiniteFetcher, SWRInfiniteKeyLoader, SWRInfiniteResponse } from 'swr/infinite';
 
 export interface MockSWRInfiniteConfig<Data, Err = Error> {
   data?: Data[] | null;
