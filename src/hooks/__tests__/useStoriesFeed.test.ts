@@ -1,23 +1,15 @@
 /** @jest-environment jsdom */
 import { jest } from '@jest/globals';
 import { act, renderHook } from '@testing-library/react';
-import type { SWRInfiniteFetcher, SWRInfiniteKeyLoader, SWRInfiniteResponse } from 'swr/infinite';
 import type { StoriesBatch, Story, StoryFeedSort } from '../../types/hackerNews';
+import { createMockUseSWRInfinite } from './mocks/swrMocks';
 
 type UseSWRInfinite = typeof import('swr/infinite').default;
 type FetchStoryIds = typeof import('../../services/hackerNewsService').fetchStoryIds;
 type FetchStoriesBatch = typeof import('../../services/hackerNewsService').fetchStoriesBatch;
 
 type StoriesKey = readonly ['stories', StoryFeedSort, number, number];
-type StoriesKeyLoader = SWRInfiniteKeyLoader<StoriesBatch, StoriesKey>;
-type StoriesFetcher = SWRInfiniteFetcher<StoriesBatch, StoriesKeyLoader>;
-type StoriesResponse = SWRInfiniteResponse<StoriesBatch, Error>;
-type MockableUseSWRInfinite = (
-  getKey: StoriesKeyLoader,
-  fetcher: StoriesFetcher,
-) => StoriesResponse;
-
-const mockUseSWRInfinite = jest.fn<MockableUseSWRInfinite>();
+const { mockUseSWRInfinite, setupSWR } = createMockUseSWRInfinite<StoriesBatch, StoriesKey>();
 const mockFetchStoryIds = jest.fn() as jest.MockedFunction<FetchStoryIds>;
 const mockFetchStoriesBatch = jest.fn() as jest.MockedFunction<FetchStoriesBatch>;
 
@@ -32,15 +24,6 @@ jest.unstable_mockModule('../../services/hackerNewsService', () => ({
 
 const { useStoriesFeed } = await import('../useStoriesFeed');
 
-interface MockSWRConfig {
-  data?: StoriesBatch[] | null;
-  error?: Error | null;
-  isLoading?: boolean;
-  isValidating?: boolean;
-  setSize?: jest.Mock;
-  mutate?: jest.Mock;
-}
-
 function makeStory(id: number, overrides: Partial<Story> = {}): Story {
   return {
     id,
@@ -50,36 +33,6 @@ function makeStory(id: number, overrides: Partial<Story> = {}): Story {
     time: 1_700_000_000,
     type: 'story',
     ...overrides,
-  };
-}
-
-function setupSWR(overrides: MockSWRConfig = {}) {
-  const setSize = (overrides.setSize ?? jest.fn()) as jest.MockedFunction<StoriesResponse['setSize']>;
-  const mutate = (overrides.mutate ?? jest.fn()) as jest.MockedFunction<StoriesResponse['mutate']>;
-
-  const response: StoriesResponse = {
-    data: overrides.data ?? undefined,
-    error: overrides.error ?? undefined,
-    isLoading: overrides.isLoading ?? false,
-    isValidating: overrides.isValidating ?? false,
-    setSize,
-    mutate,
-    size: 0,
-  };
-
-  let latestGetKey: StoriesKeyLoader | undefined;
-  let latestFetcher: StoriesFetcher | undefined;
-
-  mockUseSWRInfinite.mockImplementation((getKey, fetcher) => {
-    latestGetKey = getKey;
-    latestFetcher = fetcher;
-    return response;
-  });
-
-  return {
-    response,
-    getKey: () => latestGetKey ?? (() => null),
-    fetcher: () => latestFetcher ?? (() => null),
   };
 }
 
