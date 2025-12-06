@@ -112,7 +112,7 @@ describe('useStoriesFeed', () => {
     const { result } = renderHook(() => useStoriesFeed());
 
     const initialKey = getKey()(0, null);
-    expect(initialKey?.[3]).toBe(0);
+    expect(initialKey[3]).toBe(0);
 
     await act(async () => {
       await result.current.refresh();
@@ -122,7 +122,7 @@ describe('useStoriesFeed', () => {
     expect(mutate).toHaveBeenCalledTimes(1);
 
     const refreshedKey = getKey()(0, null);
-    expect(refreshedKey?.[3]).toBe(1);
+    expect(refreshedKey[3]).toBe(1);
   });
 
   it('caches fetched ids within a session to avoid duplicate fetches', async () => {
