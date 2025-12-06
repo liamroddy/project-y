@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 interface EmptyStateProps {
   title: string;
-  description?: string;
+  description: string;
 }
 
 export function EmptyState({ title, description }: EmptyStateProps) {
@@ -12,11 +12,9 @@ export function EmptyState({ title, description }: EmptyStateProps) {
       <Typography variant="h6" gutterBottom>
         {title}
       </Typography>
-      {description ? (
-        <Typography variant="body2" color="text.secondary">
-          {description}
-        </Typography>
-      ) : null}
+      <Typography variant="body2" color="text.secondary">
+        {description}
+      </Typography>
     </Box>
   );
 }

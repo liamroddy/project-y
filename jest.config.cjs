@@ -1,8 +1,8 @@
 const config = {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
-  testMatch: ['**/__tests__/**/*.test.ts'],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  testMatch: ['**/__tests__/**/*.test.ts?(x)'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/main.tsx',
@@ -27,6 +27,7 @@ const config = {
     '^msw$': '<rootDir>/node_modules/msw/lib/core/index.mjs',
     '^msw/node$': '<rootDir>/node_modules/msw/lib/node/index.mjs',
   },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };
 
 module.exports = config;
