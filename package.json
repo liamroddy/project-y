@@ -30,6 +30,8 @@
     "@types/jest": "^29.5.12",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "@testing-library/react": "^16.0.1",
+    "jest-environment-jsdom": "^29.7.0",
     "@vitejs/plugin-react": "^4.3.4",
     "cross-env": "^10.1.0",
     "eslint": "^9.13.0",
