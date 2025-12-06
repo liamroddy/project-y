@@ -10,6 +10,7 @@ import { useStoriesFeed } from '../../hooks/useStoriesFeed';
 import type { Story } from '../../types/hackerNews';
 
 import { ErrorBanner } from '../atoms/ErrorBanner';
+import { FeedToggle } from '../atoms/FeedToggle';
 import { AppHeader } from '../organisms/AppHeader';
 import { StoryCommentsPanel } from '../organisms/StoryCommentsPanel';
 import { StoryFeed } from '../organisms/StoryFeed';
@@ -52,7 +53,7 @@ export function FrontPage() {
         color: 'text.primary',
       }}
     >
-      <AppHeader feedType={feedType} onFeedChange={setFeedType} />
+      <AppHeader />
       <Container
         maxWidth={false}
         sx={{
@@ -71,7 +72,6 @@ export function FrontPage() {
           direction={isLandscape ? 'row' : 'column'}
           spacing={isLandscape ? 3 : 0}
           sx={{
-            mt: 2,
             flexGrow: 1,
             minHeight: 0,
             width: '100%',
@@ -88,6 +88,37 @@ export function FrontPage() {
               minWidth: 0,
             }}
           >
+            <Box
+              sx={(theme) => ({
+                flexShrink: 0,
+                position: 'sticky',
+                top: 0,
+                zIndex: 2,
+                py: 1.5,
+                pr: { xs: 0, sm: 1 },
+                backgroundColor: theme.palette.background.default,
+                backgroundImage: `linear-gradient(180deg, ${theme.palette.background.default} 0%, ${alpha(
+                  theme.palette.background.default,
+                  0.95,
+                )} 70%, ${alpha(theme.palette.background.default, 0)} 100%)`,
+                backdropFilter: 'blur(4px)',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  bottom: `-${theme.spacing(2)}`,
+                  height: theme.spacing(4),
+                  backgroundImage: `linear-gradient(180deg, ${alpha(
+                    theme.palette.background.default,
+                    0.9,
+                  )} 0%, ${alpha(theme.palette.background.default, 0)} 100%)`,
+                  pointerEvents: 'none',
+                },
+              })}
+            >
+              <FeedToggle value={feedType} onChange={setFeedType} />
+            </Box>
             <StoryFeed
               feedType={feedType}
               stories={stories}

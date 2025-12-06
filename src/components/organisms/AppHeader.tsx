@@ -5,14 +5,6 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-import type { StoryFeedSort } from '../../types/hackerNews';
-import { FeedToggle } from '../atoms/FeedToggle';
-
-interface AppHeader {
-  feedType: StoryFeedSort;
-  onFeedChange: (feed: StoryFeedSort) => void;
-}
-
 function renderYLogo() {
   return (
     <Box
@@ -37,7 +29,7 @@ function renderYLogo() {
   );
 }
 
-export function AppHeader({ feedType, onFeedChange }: AppHeader) {
+export function AppHeader() {
   return (
     <AppBar
       position="sticky"
@@ -50,25 +42,16 @@ export function AppHeader({ feedType, onFeedChange }: AppHeader) {
     >
       <Toolbar disableGutters>
         <Container maxWidth="md">
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
-            justifyContent="space-between"
-            spacing={1}
-            py={1}
-          >
-            <Stack className="title-stack" direction="row" spacing={2} alignItems="stretch">
-              {renderYLogo()}
-              <div>
-                <Typography variant="h4" component="h1">
-                  Hacker News++
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  A modern Hacker News front-end.
-                </Typography>
-              </div>
-            </Stack>
-            <FeedToggle value={feedType} onChange={onFeedChange} />
+          <Stack direction="row" spacing={2} alignItems="stretch" py={1}>
+            {renderYLogo()}
+            <div>
+              <Typography variant="h4" component="h1">
+                Hacker News++
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                A modern Hacker News front-end.
+              </Typography>
+            </div>
           </Stack>
         </Container>
       </Toolbar>
