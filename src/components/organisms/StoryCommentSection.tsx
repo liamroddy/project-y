@@ -22,10 +22,11 @@ interface StoryCommentSectionProps {
 const COMMENTS_SCROLL_CONTAINER_ID = 'story-comments-scroll-container';
 
 export function StoryCommentSection({ story }: StoryCommentSectionProps) {
-  const { comments, error, hasMore, isLoadingInitial, loadMore, resolvedCount } =
+  const { comments, error, hasMore, isLoadingInitial, isValidating, loadMore, resolvedCount } =
     useStoryComments(story);
   const totalThreads = story.kids?.length ?? 0;
-  const shouldShowLoading = isLoadingInitial || (comments.length === 0 && hasMore);
+  const shouldShowLoading =
+    !error && (isLoadingInitial || (isValidating && comments.length === 0 && hasMore));
 
   return (
     <Box

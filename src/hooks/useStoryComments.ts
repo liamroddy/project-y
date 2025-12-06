@@ -67,6 +67,7 @@ export function useStoryComments(story?: Story | null) {
     error: error?.message ?? null,
     hasMore,
     isLoadingInitial,
+    isValidating,
     loadMore,
     resolvedCount,
   };
