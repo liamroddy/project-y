@@ -185,7 +185,7 @@ describe('useStoriesFeed', () => {
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith(
         expect.stringContaining('Failed to load Hacker News stories feed (top)'),
-        error
+        error,
       );
     });
 

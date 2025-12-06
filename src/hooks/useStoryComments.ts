@@ -11,6 +11,7 @@ const PREFETCH_BUFFER = 2;
 
 export function useStoryComments(story?: Story | null) {
   const topLevelIds = story?.kids ?? [];
+  const storyId = story?.id ?? null;
   const hasStory = Boolean(story);
   const initialSize = hasStory ? Math.min(THREADS_PER_BATCH, topLevelIds.length) : 0;
 
@@ -61,6 +62,17 @@ export function useStoryComments(story?: Story | null) {
       void setSize(desiredSize);
     }
   }, [hasMore, resolvedCount, setSize, size, story, totalThreads]);
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    const label = storyId
+      ? `Failed to load comments for story ${String(storyId)}`
+      : 'Failed to load story comments for unknown story';
+    console.error(label, error);
+  }, [error, storyId]);
 
   return {
     comments,

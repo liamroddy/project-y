@@ -164,4 +164,41 @@ describe('useStoryComments', () => {
 
     expect(mockFetchCommentThread).toHaveBeenCalledWith(15);
   });
+
+  describe('error logging', () => {
+    let originalConsoleError: typeof console.error;
+
+    beforeEach(() => {
+      originalConsoleError = console.error;
+      console.error = jest.fn();
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+    });
+
+    it('logs an error with the story id when error occurs and story is provided', () => {
+      const story = makeStory(99, { kids: [200] });
+      const error = new Error('fetch failed');
+      setupSWR({ data: [null], error });
+
+      renderHook(() => useStoryComments(story));
+
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith('Failed to load comments for story 99', error);
+    });
+
+    it('logs an error with unknown story label when error occurs and no story is provided', () => {
+      const error = new Error('fetch failed');
+      setupSWR({ error });
+
+      renderHook(() => useStoryComments());
+
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to load story comments for unknown story',
+        error,
+      );
+    });
+  });
 });
