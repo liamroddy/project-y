@@ -90,14 +90,14 @@ export function StoryFeed({
   }, [feedType]);
 
   const virtualizedStories = useMemo(() => {
-    const totalHeight = stories.length * ROW_HEIGHT;
     const visibleRowCount = Math.ceil(containerHeight / ROW_HEIGHT) + BUFFER_ROWS * 2;
     const startIndex = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER_ROWS);
     const endIndex = Math.min(stories.length, startIndex + visibleRowCount);
     const offsetY = startIndex * ROW_HEIGHT;
+    const bottomSpacerHeight = Math.max((stories.length - endIndex) * ROW_HEIGHT, 0);
     const visibleStories = stories.slice(startIndex, endIndex);
 
-    return { totalHeight, offsetY, visibleStories };
+    return { offsetY, bottomSpacerHeight, visibleStories };
   }, [containerHeight, scrollTop, stories]);
 
   const renderFeed = () => {
@@ -135,32 +135,24 @@ export function StoryFeed({
           </Typography>
         }
       >
-        <Box
-          sx={{
-            height: virtualizedStories.totalHeight || ROW_HEIGHT,
-            position: 'relative',
-          }}
-        >
-          <Box
-            sx={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              transform: `translateY(${String(virtualizedStories.offsetY)}px)`,
-            }}
-          >
-            <Stack spacing={2.5}>
-              {virtualizedStories.visibleStories.map((story) => (
-                <StoryCard
-                  key={story.id}
-                  story={story}
-                  mode={cardMode}
-                  onSelect={handleSelect}
-                  isActive={isLandscape ? selectedStoryId === story.id : false}
-                />
-              ))}
-            </Stack>
-          </Box>
+        <Box>
+          {virtualizedStories.offsetY > 0 ? (
+            <Box sx={{ height: virtualizedStories.offsetY }} />
+          ) : null}
+          <Stack spacing={2.5}>
+            {virtualizedStories.visibleStories.map((story) => (
+              <StoryCard
+                key={story.id}
+                story={story}
+                mode={cardMode}
+                onSelect={handleSelect}
+                isActive={isLandscape ? selectedStoryId === story.id : false}
+              />
+            ))}
+          </Stack>
+          {virtualizedStories.bottomSpacerHeight > 0 ? (
+            <Box sx={{ height: virtualizedStories.bottomSpacerHeight }} />
+          ) : null}
         </Box>
       </InfiniteScroll>
     );
