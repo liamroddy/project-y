@@ -3,7 +3,7 @@ import type { Comment, CommentNode, StoriesBatch, Story, StoryFeedSort } from '.
 const API_BASE = 'https://hacker-news.firebaseio.com/v0';
 const PAGE_SIZE = 20;
 
-class HackerNewsApiError extends Error {
+export class HackerNewsApiError extends Error {
   readonly status?: number;
   readonly endpoint: string;
 

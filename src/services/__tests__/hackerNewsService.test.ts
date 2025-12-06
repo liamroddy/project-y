@@ -5,6 +5,7 @@ import {
   fetchStoryIds,
   fetchStoriesBatch,
   fetchStoryComments,
+  HackerNewsApiError,
   HackerNewsRequestAbortedError,
 } from '../hackerNewsService';
 import type { Story, Comment } from '../../types/hackerNews';
@@ -183,7 +184,10 @@ describe('fetchStoriesBatch', () => {
     queueJson('topstories', [5]);
     queueError('item/5', new Error('boom'));
 
-    await expect(fetchStoriesBatch('top', 0, 1)).rejects.toMatchObject({ endpoint: 'item/5' });
+    const promise = fetchStoriesBatch('top', 0, 1);
+
+    await expect(promise).rejects.toThrow(HackerNewsApiError);
+    await expect(promise).rejects.toMatchObject({ endpoint: 'item/5' });
   });
 });
 
