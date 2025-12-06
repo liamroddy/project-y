@@ -15,7 +15,7 @@ export function StoryCommentsPanel({ story }: StoryCommentsPanelProps) {
   const totalThreads = story?.kids?.length ?? 0;
   const shouldShowLoading =
     !error && (isLoadingInitial || (isValidating && comments.length === 0 && hasMore));
-  
+
   if (!story) {
     return (
       <Box

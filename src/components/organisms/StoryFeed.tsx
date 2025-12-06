@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import type { Story, StoryFeedSort } from '../../types/hackerNews';
+import { useVirtualizedStories } from '../../hooks/useVirtualizedStories';
 import { EmptyState } from '../atoms/EmptyState';
 import { LoadingState } from '../atoms/LoadingState';
 import { StoryCard } from '../organisms/StoryCard';
@@ -89,16 +90,13 @@ export function StoryFeed({
     setScrollTop(0);
   }, [feedType]);
 
-  const virtualizedStories = useMemo(() => {
-    const visibleRowCount = Math.ceil(containerHeight / ROW_HEIGHT) + BUFFER_ROWS * 2;
-    const startIndex = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER_ROWS);
-    const endIndex = Math.min(stories.length, startIndex + visibleRowCount);
-    const offsetY = startIndex * ROW_HEIGHT;
-    const bottomSpacerHeight = Math.max((stories.length - endIndex) * ROW_HEIGHT, 0);
-    const visibleStories = stories.slice(startIndex, endIndex);
-
-    return { offsetY, bottomSpacerHeight, visibleStories };
-  }, [containerHeight, scrollTop, stories]);
+  const virtualizedStories = useVirtualizedStories({
+    stories,
+    containerHeight,
+    scrollTop,
+    rowHeight: ROW_HEIGHT,
+    bufferRows: BUFFER_ROWS,
+  });
 
   const renderFeed = () => {
     if (isInitializing) {
