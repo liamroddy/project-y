@@ -1,21 +1,42 @@
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import type { StoryFeedSort } from '../../types/hackerNews';
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  borderRadius: 9999,
+  padding: 3,
+  margin: 3,
+  backgroundColor: alpha(theme.palette.common.white, 0.08),
+  display: 'inline-flex',
+  alignItems: 'center',
+  border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`,
   '& .MuiToggleButtonGroup-grouped': {
-    margin: theme.spacing(0.5),
+    margin: 0,
     border: 0,
+    borderRadius: 9999,
+    padding: theme.spacing(0.75, 2.25),
+    fontWeight: 600,
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    color: alpha(theme.palette.common.white, 0.6),
+    transition: theme.transitions.create(
+      ['background-color', 'color'],
+      { duration: theme.transitions.duration.shortest }
+    ),
     '&.Mui-disabled': {
       border: 0,
     },
-    '&:not(:first-of-type)': {
-      borderRadius: theme.shape.borderRadius,
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.06),
     },
-    '&:first-of-type': {
-      borderRadius: theme.shape.borderRadius,
+    '&.Mui-selected': {
+      color: theme.palette.getContrastText(theme.palette.primary.main),
+      backgroundColor: theme.palette.primary.main,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+      },
     },
   },
 }));

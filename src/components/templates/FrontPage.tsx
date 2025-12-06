@@ -101,20 +101,7 @@ export function FrontPage() {
                   theme.palette.background.default,
                   0.95,
                 )} 70%, ${alpha(theme.palette.background.default, 0)} 100%)`,
-                backdropFilter: 'blur(4px)',
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  bottom: `-${theme.spacing(2)}`,
-                  height: theme.spacing(4),
-                  backgroundImage: `linear-gradient(180deg, ${alpha(
-                    theme.palette.background.default,
-                    0.9,
-                  )} 0%, ${alpha(theme.palette.background.default, 0)} 100%)`,
-                  pointerEvents: 'none',
-                },
+                backdropFilter: 'blur(4px)'
               })}
             >
               <FeedToggle value={feedType} onChange={setFeedType} />
