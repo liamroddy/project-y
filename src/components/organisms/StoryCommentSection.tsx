@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 import type { Story } from '../../types/hackerNews';
 import { useStoryComments } from '../../hooks/useStoryComments';
@@ -18,8 +19,13 @@ interface StoryCommentSectionProps {
   story: Story;
 }
 
+const COMMENTS_SCROLL_CONTAINER_ID = 'story-comments-scroll-container';
+
 export function StoryCommentSection({ story }: StoryCommentSectionProps) {
-  const { comments, isLoading, error } = useStoryComments(story.id);
+  const { comments, error, hasMore, isLoadingInitial, loadMore, resolvedCount } =
+    useStoryComments(story);
+  const totalThreads = story.kids?.length ?? 0;
+  const shouldShowLoading = isLoadingInitial || (comments.length === 0 && hasMore);
 
   return (
     <Box
@@ -65,21 +71,37 @@ export function StoryCommentSection({ story }: StoryCommentSectionProps) {
         ) : null}
       </Stack>
       <Divider sx={{ my: 2 }} />
-      <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1 }}>
-        {isLoading ? (
+      <Box id={COMMENTS_SCROLL_CONTAINER_ID} sx={{ flexGrow: 1, overflowY: 'auto', pr: 1 }}>
+        {shouldShowLoading ? (
           <LoadingState label="Loading comments…" />
         ) : error ? (
           <ErrorBanner message={error} />
         ) : comments.length ? (
-          <Stack spacing={3}>
-            {comments.map((comment) => (
-              <StoryComment key={comment.id} comment={comment} />
-            ))}
-          </Stack>
+          <InfiniteScroll
+            dataLength={resolvedCount}
+            next={() => {
+              loadMore();
+            }}
+            hasMore={hasMore}
+            scrollableTarget={COMMENTS_SCROLL_CONTAINER_ID}
+            loader={<LoadingState label="Loading more comments…" />}
+            scrollThreshold={0.8}
+            style={{ overflow: 'visible' }}
+          >
+            <Stack spacing={3}>
+              {comments.map((comment) => (
+                <StoryComment key={comment.id} comment={comment} />
+              ))}
+            </Stack>
+          </InfiniteScroll>
         ) : (
           <EmptyState
-            title="No comments yet"
-            description="This story does not have any comments on Hacker News."
+            title={totalThreads ? 'Comments unavailable' : 'No comments yet'}
+            description={
+              totalThreads
+                ? 'Threads for this story are not available right now.'
+                : 'This story does not have any comments on Hacker News.'
+            }
           />
         )}
       </Box>

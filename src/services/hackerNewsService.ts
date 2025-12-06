@@ -3,7 +3,7 @@ import type { Comment, CommentNode, StoriesBatch, Story, StoryFeedSort } from '.
 const API_BASE = 'https://hacker-news.firebaseio.com/v0';
 const PAGE_SIZE = 20;
 
-export class HackerNewsApiError extends Error {
+class HackerNewsApiError extends Error {
   readonly status?: number;
   readonly endpoint: string;
 
@@ -161,6 +161,14 @@ export async function fetchStoriesBatch(
     nextStart,
     hasMore: nextStart < ids.length,
   };
+}
+
+export async function fetchCommentThread(
+  commentId: number,
+  options?: FetchOptions,
+): Promise<CommentNode | null> {
+  const thread = (await buildCommentTree([commentId], options)).at(0);
+  return thread ?? null;
 }
 
 export async function fetchStoryComments(

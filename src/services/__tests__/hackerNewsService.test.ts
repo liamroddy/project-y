@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
+  fetchCommentThread,
   fetchStoryIds,
   fetchStoriesBatch,
   fetchStoryComments,
@@ -247,5 +248,48 @@ describe('fetchStoryComments', () => {
     const comments = await fetchStoryComments(404);
 
     expect(comments).toEqual([]);
+  });
+});
+
+describe('fetchCommentThread', () => {
+  it('returns a nested comment node when available', async () => {
+    const rootComment: Comment = {
+      id: 300,
+      type: 'comment',
+      parent: 0,
+      text: 'Root',
+      time: 1_700_000_100,
+      kids: [301],
+    };
+    const childComment: Comment = {
+      id: 301,
+      type: 'comment',
+      parent: 300,
+      text: 'Child',
+      time: 1_700_000_101,
+    };
+
+    queueJson('item/300', rootComment);
+    queueJson('item/301', childComment);
+
+    const thread = await fetchCommentThread(300);
+
+    expect(thread).toEqual({
+      ...rootComment,
+      children: [
+        {
+          ...childComment,
+          children: [],
+        },
+      ],
+    });
+  });
+
+  it('returns null when the comment cannot be loaded', async () => {
+    queueJson('item/999', null);
+
+    const thread = await fetchCommentThread(999);
+
+    expect(thread).toBeNull();
   });
 });
