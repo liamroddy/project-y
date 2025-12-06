@@ -21,10 +21,9 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
     color: alpha(theme.palette.common.white, 0.6),
-    transition: theme.transitions.create(
-      ['background-color', 'color'],
-      { duration: theme.transitions.duration.shortest }
-    ),
+    transition: theme.transitions.create(['background-color', 'color'], {
+      duration: theme.transitions.duration.shortest,
+    }),
     '&.Mui-disabled': {
       border: 0,
     },

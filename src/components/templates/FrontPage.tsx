@@ -79,6 +79,7 @@ export function FrontPage() {
           }}
         >
           <Box
+            className="story-feed-container"
             sx={{
               flex: isLandscape ? '0 0 33%' : '1 1 auto',
               maxWidth: isLandscape ? '33%' : '100%',
@@ -89,6 +90,7 @@ export function FrontPage() {
             }}
           >
             <Box
+              className="feed-toggle-container"
               sx={(theme) => ({
                 flexShrink: 0,
                 position: 'sticky',
@@ -96,15 +98,31 @@ export function FrontPage() {
                 zIndex: 2,
                 py: 1.5,
                 pr: { xs: 0, sm: 1 },
-                backgroundColor: theme.palette.background.default,
-                backgroundImage: `linear-gradient(180deg, ${theme.palette.background.default} 0%, ${alpha(
+                display: 'flex',
+                justifyContent: 'center',
+                background: `linear-gradient(180deg, ${theme.palette.background.default} 0%, ${alpha(
                   theme.palette.background.default,
                   0.95,
-                )} 70%, ${alpha(theme.palette.background.default, 0)} 100%)`,
-                backdropFilter: 'blur(4px)'
+                )} 50%, ${alpha(theme.palette.background.default, 0)} 100%)`,
+                overflow: 'visible',
               })}
             >
               <FeedToggle value={feedType} onChange={setFeedType} />
+              <Box
+                aria-hidden
+                sx={(theme) => ({
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: '100%',
+                  height: theme.spacing(6),
+                  backgroundImage: `linear-gradient(180deg, ${alpha(
+                    theme.palette.background.default,
+                    0.95,
+                  )} 0%, ${alpha(theme.palette.background.default, 0)} 100%)`,
+                  pointerEvents: 'none',
+                })}
+              />
             </Box>
             <StoryFeed
               feedType={feedType}
