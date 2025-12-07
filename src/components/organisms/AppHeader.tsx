@@ -1,6 +1,5 @@
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -41,19 +40,17 @@ export function AppHeader() {
       }}
     >
       <Toolbar disableGutters>
-        <Container maxWidth="md">
-          <Stack direction="row" spacing={2} alignItems="stretch" py={1}>
-            {renderYLogo()}
-            <div>
-              <Typography variant="h4" component="h1">
-                Hacker News++
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                A modern Hacker News front-end.
-              </Typography>
-            </div>
-          </Stack>
-        </Container>
+        <Stack direction="row" spacing={2} py={1} px={2}>
+          {renderYLogo()}
+          <div>
+            <Typography variant="h4" component="h1">
+              Hacker News++
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              A modern Hacker News front-end.
+            </Typography>
+          </div>
+        </Stack>
       </Toolbar>
     </AppBar>
   );
