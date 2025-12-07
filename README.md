@@ -1,6 +1,6 @@
 # Hacker News++
 
-A modern reader application for **Hacker News** built with [Vite](https://vite.dev/) + [React](https://react.dev/).
+A modern, responsive reader application for **Hacker News** built with [Vite](https://vite.dev/) + [React](https://react.dev/).
 
 🚀 **[View Live Demo on GitHub Pages](https://liamroddy.github.io/project-y/)**
 

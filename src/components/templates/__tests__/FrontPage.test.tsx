@@ -106,7 +106,7 @@ beforeAll(() => {
 });
 
 describe('FrontPage', () => {
-  describe("responsiveness", () => {
+  describe('responsiveness', () => {
     it('renders the header, feed toggle, story feed (but no comments panel) in portrait mode', () => {
       const story = createStory({ title: 'Featured Story' });
       mockUseStoriesFeed.mockReturnValue(createFeedState({ stories: [story] }));
