@@ -163,6 +163,7 @@ export function StoryFeed({
         flexGrow: 1,
         overflowY: 'auto',
         pr: { xs: 0, sm: 1 },
+        pt: 2,
       }}
     >
       {renderFeed()}

@@ -51,7 +51,7 @@ export function FrontPage() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: `linear-gradient(180deg, ${theme.palette.background.default} 0%, ${alpha(theme.palette.background.default, 0.9)} 100%)`,
+        backgroundColor: theme.palette.background.default,
         color: 'text.primary',
       }}
     >
@@ -98,7 +98,7 @@ export function FrontPage() {
                 position: 'sticky',
                 top: 0,
                 zIndex: 2,
-                py: 1.5,
+                pb: 1.5,
                 pr: { xs: 0, sm: 1 },
                 display: 'flex',
                 justifyContent: 'center',
