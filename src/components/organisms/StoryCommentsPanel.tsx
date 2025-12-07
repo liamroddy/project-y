@@ -7,11 +7,15 @@ import { StoryCommentsContent } from '../molecules/StoryCommentsContent';
 
 interface StoryCommentsPanelProps {
   story: Story | null;
+  useStoryCommentsHook?: typeof useStoryComments;
 }
 
-export function StoryCommentsPanel({ story }: StoryCommentsPanelProps) {
+export function StoryCommentsPanel({
+  story,
+  useStoryCommentsHook = useStoryComments,
+}: StoryCommentsPanelProps) {
   const { comments, error, hasMore, isLoadingInitial, isValidating, loadMore, resolvedCount } =
-    useStoryComments(story);
+    useStoryCommentsHook(story);
   const totalThreads = story?.kids?.length ?? 0;
   const shouldShowLoading =
     !error && (isLoadingInitial || (isValidating && comments.length === 0 && hasMore));
