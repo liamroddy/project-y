@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 import type { CommentNode } from '../../types/hackerNews';
 import { CommentHeader } from '../atoms/CommentHeader';
-import { sanitizeCommentHtml } from '../../utils/sanitizeHtml';
+import { sanitizeCommentHtml } from '../../utils/sanitization';
 
 interface StoryCommentProps {
   comment: CommentNode;

@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { sanitizeCommentHtml } from '../sanitizeHtml';
+import { sanitizeCommentHtml } from '../sanitization';
 
 describe('sanitizeCommentHtml', () => {
   it('returns an empty string when text is missing', () => {
