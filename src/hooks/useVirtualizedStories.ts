@@ -6,16 +6,16 @@ interface UseVirtualizedStoriesArgs {
   stories: Story[];
   containerHeight: number;
   scrollTop: number;
-  rowHeight?: number;
-  bufferRows?: number;
+  rowHeight: number;
+  bufferRows: number;
 }
 
 export function useVirtualizedStories({
   stories,
   containerHeight,
   scrollTop,
-  rowHeight = 170,
-  bufferRows = 5,
+  rowHeight,
+  bufferRows,
 }: UseVirtualizedStoriesArgs) {
   return useMemo(() => {
     const visibleRowCount = Math.ceil(containerHeight / rowHeight) + bufferRows * 2;
