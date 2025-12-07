@@ -1,21 +1,21 @@
-# Project Y
+# Hacker News++
 
-This is a new reader application for Hacker News built with [Vite](https://vite.dev/) + [React](https://react.dev/).
+A modern reader application for **Hacker News** built with [Vite](https://vite.dev/) + [React](https://react.dev/).
 
-You can see it running live [right here on GitHub Pages](https://liamroddy.github.io/project-y/).
+🚀 **[View Live Demo on GitHub Pages](https://liamroddy.github.io/project-y/)**
 
-## Getting started
+## 🛠️ Building the App
 
-**Recommended:** use Node >=22 to build.
+**Recommended:** Node >=22
 
-### Development build:
+### 💻 Development build:
 
 ```bash
 npm install
 npm run dev
 ```
 
-### Production build:
+### 🏗️ Production build:
 
 ```bash
 npm install
@@ -23,18 +23,19 @@ npm run build
 npm run preview
 ```
 
-## Code quality
+## ✨ Code Quality
 
-- `npm run lint` runs ESLint with strict TypeScript + React 19 rules.
-- `npm run format` (and `npm run format:check`) use Prettier 3 to keep the codebase consistently styled.
+- 🔍 `npm run lint` - Runs ESLint with strict TypeScript + React 19 rules
+- 💅 `npm run format` / `npm run format:check` - Uses Prettier 3 for consistent code styling
 
-## Tests and coverage
+## 🧪 Tests and Coverage
 
-- `npm run test` executes the Jest suite.
-- `npm run test:coverage` runs the tests with Sonar check for coverage.
+- ✅ `npm run test` - Executes the Jest suite
+- 📊 `npm run test:coverage` - Runs tests with Sonar coverage check
 
-## Assumptions made
-- For this initial POC I decided not to focus on accessibility and performance, though there is definitely room for improvement for both.
+## 📝 Assumptions Made
+
+- For this initial POC I decided not to focus on **accessibility** and **performance**, though there is definitely room for improvement for both.
 - I also decided to implement this as a single-page "reader" app for now, with no sign-in, posting, commenting etc. enabled.
 
-If I was to continue working on the project past this point the above would be my next areas of focus.
+**Next steps:** If I was to continue working on the project past this point, the above would be my next areas of focus.
