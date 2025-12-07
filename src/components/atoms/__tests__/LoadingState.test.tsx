@@ -18,4 +18,3 @@ describe('LoadingState', () => {
     expect(screen.getByRole('progressbar')).toBeVisible();
   });
 });
-

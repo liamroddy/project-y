@@ -12,4 +12,3 @@ describe('ErrorBanner', () => {
     expect(alert).toHaveTextContent('Something went wrong.');
   });
 });
-

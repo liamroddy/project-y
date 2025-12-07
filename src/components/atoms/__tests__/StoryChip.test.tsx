@@ -11,4 +11,3 @@ describe('StoryChip', () => {
     expect(screen.getByTestId('chip-icon')).toBeVisible();
   });
 });
-
