@@ -21,7 +21,6 @@ interface StoryFeedProps {
   hasMore: boolean;
   isInitializing: boolean;
   loadMore: () => void | Promise<void>;
-  isLandscape: boolean;
   selectedStoryId: number | null;
   onStorySelect?: (story: Story) => void;
 }
@@ -32,7 +31,6 @@ export function StoryFeed({
   hasMore,
   isInitializing,
   loadMore,
-  isLandscape,
   selectedStoryId,
   onStorySelect,
 }: StoryFeedProps) {
@@ -116,9 +114,6 @@ export function StoryFeed({
       );
     }
 
-    const cardMode = isLandscape ? 'select' : 'link';
-    const handleSelect = isLandscape ? onStorySelect : undefined;
-
     return (
       <InfiniteScroll
         key={feedType}
@@ -146,9 +141,9 @@ export function StoryFeed({
               <StoryCard
                 key={story.id}
                 story={story}
-                mode={cardMode}
-                onSelect={handleSelect}
-                isActive={isLandscape ? selectedStoryId === story.id : false}
+                mode="select"
+                onSelect={onStorySelect}
+                isActive={selectedStoryId === story.id}
               />
             ))}
           </Stack>

@@ -116,4 +116,64 @@ describe('StoryCommentsContent', () => {
     fireEvent.click(externalLink);
     expect(parentClick).not.toHaveBeenCalled();
   });
+
+  describe('back to feed button', () => {
+    it('renders the back button when enabled', () => {
+      render(
+        <StoryCommentsContent
+          story={story}
+          comments={[]}
+          error={null}
+          totalThreads={0}
+          resolvedCount={0}
+          hasMore={false}
+          showLoading={false}
+          loadMore={jest.fn()}
+          hasBackButton
+          onBack={jest.fn()}
+        />,
+      );
+
+      expect(screen.getByRole('button', { name: /Back to story feed/i })).toBeInTheDocument();
+    });
+
+    it('does not render the back button when not requested', () => {
+      render(
+        <StoryCommentsContent
+          story={story}
+          comments={[]}
+          error={null}
+          totalThreads={0}
+          resolvedCount={0}
+          hasMore={false}
+          showLoading={false}
+          loadMore={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryByRole('button', { name: /Back to story feed/i })).not.toBeInTheDocument();
+    });
+
+    it('calls the back to feed handler when provided', () => {
+      const onBack = jest.fn();
+
+      render(
+        <StoryCommentsContent
+          story={story}
+          comments={[]}
+          error={null}
+          totalThreads={0}
+          resolvedCount={0}
+          hasMore={false}
+          showLoading={false}
+          loadMore={jest.fn()}
+          hasBackButton
+          onBack={onBack}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: /Back to story feed/i }));
+      expect(onBack).toHaveBeenCalled();
+    });
+  });
 });

@@ -48,8 +48,8 @@ function createBaseProps(overrides: Partial<StoryFeedProps> = {}): StoryFeedProp
     hasMore: true,
     isInitializing: false,
     loadMore: jest.fn(() => undefined),
-    isLandscape: false,
     selectedStoryId: null,
+    onStorySelect: jest.fn(),
     ...overrides,
   };
 }
@@ -79,32 +79,36 @@ describe('StoryFeed', () => {
     expect(screen.getByText('Try switching feeds or refreshing the page.')).toBeInTheDocument();
   });
 
-  it('renders visible stories in link mode for portrait layouts', () => {
+  it('renders visible stories and allows selection', () => {
     const stories = [createStory({ id: 1 }), createStory({ id: 2, title: 'Second story' })];
-    render(<StoryFeed {...createBaseProps({ stories, hasMore: false })} />);
-
-    expect(screen.getByRole('link', { name: /Sample story/i })).toHaveAttribute(
-      'href',
-      stories[0].url,
-    );
-    expect(screen.getByRole('link', { name: /Second story/i })).toHaveAttribute(
-      'href',
-      stories[1].url,
-    );
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(2);
-    expect(screen.getByText('You are all caught up.')).toBeInTheDocument();
-  });
-
-  it('switches to select mode in landscape layouts and highlights the active story', () => {
-    const stories = [createStory({ id: 1 }), createStory({ id: 2, title: 'Highlighted story' })];
     const handleStorySelect = jest.fn();
     render(
       <StoryFeed
         {...createBaseProps({
           stories,
-          isLandscape: true,
-          selectedStoryId: 2,
+          hasMore: false,
           onStorySelect: handleStorySelect,
+        })}
+      />,
+    );
+
+    const firstStoryButton = screen.getByRole('button', { name: /Sample story/i });
+    const secondStoryButton = screen.getByRole('button', { name: /Second story/i });
+    fireEvent.click(firstStoryButton);
+    fireEvent.click(secondStoryButton);
+
+    expect(handleStorySelect).toHaveBeenNthCalledWith(1, stories[0]);
+    expect(handleStorySelect).toHaveBeenNthCalledWith(2, stories[1]);
+    expect(screen.getByText('You are all caught up.')).toBeInTheDocument();
+  });
+
+  it('highlights the active story when selected', () => {
+    const stories = [createStory({ id: 1 }), createStory({ id: 2, title: 'Highlighted story' })];
+    render(
+      <StoryFeed
+        {...createBaseProps({
+          stories,
+          selectedStoryId: 2,
         })}
       />,
     );
@@ -115,8 +119,5 @@ describe('StoryFeed', () => {
     ];
     expect(buttons[0]).toHaveAttribute('aria-pressed', 'false');
     expect(buttons[1]).toHaveAttribute('aria-pressed', 'true');
-
-    fireEvent.click(buttons[0]);
-    expect(handleStorySelect).toHaveBeenCalledWith(stories[0]);
   });
 });

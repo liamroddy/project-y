@@ -1,3 +1,4 @@
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -24,6 +25,8 @@ interface StoryCommentsContentProps {
   hasMore: boolean;
   showLoading: boolean;
   loadMore: () => void;
+  hasBackButton?: boolean;
+  onBack?: () => void;
 }
 
 export function StoryCommentsContent({
@@ -35,11 +38,14 @@ export function StoryCommentsContent({
   hasMore,
   showLoading,
   loadMore,
+  hasBackButton = false,
+  onBack,
 }: StoryCommentsContentProps) {
   return (
     <Box
       sx={{
         height: '100%',
+        width: '100%',
         borderRadius: 3,
         border: '1px solid',
         borderColor: 'divider',
@@ -51,6 +57,16 @@ export function StoryCommentsContent({
       }}
     >
       <Stack direction="row" spacing={2} alignItems="flex-start">
+        {hasBackButton && onBack ? (
+          <IconButton
+            size="small"
+            aria-label="Back to story feed"
+            onClick={onBack}
+            sx={{ mt: -0.5 }}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </IconButton>
+        ) : null}
         <Box sx={{ flexGrow: 1 }}>
           <Typography variant="overline" color="text.secondary">
             Discussion

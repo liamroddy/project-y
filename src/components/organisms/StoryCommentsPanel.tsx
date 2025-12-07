@@ -8,11 +8,15 @@ import { StoryCommentsContent } from '../molecules/StoryCommentsContent';
 interface StoryCommentsPanelProps {
   story: Story | null;
   useStoryCommentsHook?: typeof useStoryComments;
+  hasBackButton?: boolean;
+  onBack?: () => void;
 }
 
 export function StoryCommentsPanel({
   story,
   useStoryCommentsHook = useStoryComments,
+  hasBackButton = false,
+  onBack,
 }: StoryCommentsPanelProps) {
   const { comments, error, hasMore, isLoadingInitial, isValidating, loadMore, resolvedCount } =
     useStoryCommentsHook(story);
@@ -25,6 +29,7 @@ export function StoryCommentsPanel({
       <Box
         sx={{
           height: '100%',
+          width: '100%',
           borderRadius: 3,
           border: '1px dashed',
           borderColor: 'divider',
@@ -53,6 +58,8 @@ export function StoryCommentsPanel({
       hasMore={hasMore}
       showLoading={shouldShowLoading}
       loadMore={loadMore}
+      hasBackButton={hasBackButton}
+      onBack={onBack}
     />
   );
 }

@@ -24,12 +24,6 @@ export function FrontPage() {
   const isLandscape = useMediaQuery('(orientation: landscape)');
 
   useEffect(() => {
-    if (!isLandscape && selectedStoryId != null) {
-      setSelectedStoryId(null);
-    }
-  }, [isLandscape, selectedStoryId]);
-
-  useEffect(() => {
     setSelectedStoryId(null);
   }, [feedType]);
 
@@ -44,6 +38,14 @@ export function FrontPage() {
   const handleStorySelect = useCallback((story: Story) => {
     setSelectedStoryId(story.id);
   }, []);
+
+  const handleStoryDeselect = useCallback(() => {
+    setSelectedStoryId(null);
+  }, []);
+
+  const isStorySelected = Boolean(selectedStory);
+  const showStoryFeed = isLandscape || !isStorySelected;
+  const showCommentsPanel = isLandscape || isStorySelected;
 
   return (
     <Box
@@ -81,9 +83,9 @@ export function FrontPage() {
           <Box
             className="story-feed-container"
             sx={{
-              flex: isLandscape ? '0 0 33%' : '1 1 auto',
+              flex: isLandscape ? '0 0 33%' : showStoryFeed ? '1 1 0%' : '0 0 auto',
               maxWidth: isLandscape ? '33%' : '100%',
-              display: 'flex',
+              display: showStoryFeed ? 'flex' : 'none',
               flexDirection: 'column',
               minHeight: 0,
               minWidth: 0,
@@ -124,27 +126,35 @@ export function FrontPage() {
                 })}
               />
             </Box>
-            <StoryFeed
-              feedType={feedType}
-              stories={stories}
-              hasMore={hasMore}
-              isInitializing={isInitializing}
-              loadMore={loadMore}
-              isLandscape={isLandscape}
-              selectedStoryId={selectedStoryId}
-              onStorySelect={handleStorySelect}
-            />
+            {showStoryFeed ? (
+              <StoryFeed
+                feedType={feedType}
+                stories={stories}
+                hasMore={hasMore}
+                isInitializing={isInitializing}
+                loadMore={loadMore}
+                selectedStoryId={selectedStoryId}
+                onStorySelect={handleStorySelect}
+              />
+            ) : null}
           </Box>
-          {isLandscape ? (
+          {showCommentsPanel ? (
             <Box
               sx={{
-                flex: '0 0 67%',
-                maxWidth: '67%',
+                flex: isLandscape ? '0 0 67%' : '1 1 0%',
+                maxWidth: isLandscape ? '67%' : '100%',
                 minHeight: 0,
                 minWidth: 0,
+                display: 'flex',
+                width: '100%',
+                overflow: 'hidden',
               }}
             >
-              <StoryCommentsPanel story={selectedStory} />
+              <StoryCommentsPanel
+                story={selectedStory}
+                hasBackButton={!isLandscape}
+                onBack={!isLandscape ? handleStoryDeselect : undefined}
+              />
             </Box>
           ) : null}
         </Stack>

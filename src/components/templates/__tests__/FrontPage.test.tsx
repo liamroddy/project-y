@@ -106,31 +106,62 @@ beforeAll(() => {
 });
 
 describe('FrontPage', () => {
-  it('renders the header, feed toggle, story feed (but no comments panel) in portrait mode', () => {
-    const story = createStory({ title: 'Featured Story' });
-    mockUseStoriesFeed.mockReturnValue(createFeedState({ stories: [story] }));
+  describe("responsiveness", () => {
+    it('renders the header, feed toggle, story feed (but no comments panel) in portrait mode', () => {
+      const story = createStory({ title: 'Featured Story' });
+      mockUseStoriesFeed.mockReturnValue(createFeedState({ stories: [story] }));
 
-    render(<FrontPage />);
+      render(<FrontPage />);
 
-    expect(screen.getByRole('heading', { name: 'Hacker News++' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Top' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'New' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Featured Story/i })).toBeInTheDocument();
-    expect(screen.queryByText('No Story Selected')).toBeNull();
-  });
+      expect(screen.getByRole('heading', { name: 'Hacker News++' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Top' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'New' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Featured Story/i })).toBeInTheDocument();
+      expect(screen.queryByText('No Story Selected')).toBeNull();
+      expect(screen.queryByText('Discussion')).toBeNull();
+    });
 
-  it('renders the header, feed toggle, story feed AND the comments panel in landscape mode', () => {
-    mockUseMediaQuery.mockReturnValue(true);
-    const story = createStory({ title: 'Featured Story' });
-    mockUseStoriesFeed.mockReturnValue(createFeedState({ stories: [story] }));
+    it('renders the header, feed toggle, story feed AND the comments panel in landscape mode', () => {
+      mockUseMediaQuery.mockReturnValue(true);
+      const story = createStory({ title: 'Featured Story' });
+      mockUseStoriesFeed.mockReturnValue(createFeedState({ stories: [story] }));
 
-    render(<FrontPage />);
+      render(<FrontPage />);
 
-    expect(screen.getByRole('heading', { name: 'Hacker News++' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Top' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'New' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Featured Story/i })).toBeInTheDocument();
-    expect(screen.queryByText('No Story Selected')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Hacker News++' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Top' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'New' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Featured Story/i })).toBeInTheDocument();
+      expect(screen.queryByText('No Story Selected')).toBeInTheDocument();
+    });
+
+    it('toggles the comments panel fullscreen in portrait mode when a story is selected', () => {
+      const story = createStory({ title: 'Featured Story' });
+      mockUseStoriesFeed.mockReturnValue(createFeedState({ stories: [story] }));
+
+      render(<FrontPage />);
+
+      fireEvent.click(screen.getByRole('button', { name: /Featured Story/i }));
+      expect(screen.getByText('Discussion')).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Featured Story/i })).toBeNull();
+
+      fireEvent.click(screen.getByRole('button', { name: /Back to story feed/i }));
+      expect(screen.queryByText('Discussion')).toBeNull();
+      expect(screen.getByRole('button', { name: /Featured Story/i })).toBeInTheDocument();
+    });
+
+    it('keeps the story feed AND comments panel visible in landscape mode when a story is selected', () => {
+      mockUseMediaQuery.mockReturnValue(true);
+      const story = createStory({ title: 'Featured Story' });
+      mockUseStoriesFeed.mockReturnValue(createFeedState({ stories: [story] }));
+
+      render(<FrontPage />);
+
+      fireEvent.click(screen.getByRole('button', { name: /Featured Story/i }));
+      expect(screen.getByText('Discussion')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Featured Story/i })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Back to story feed/i })).toBeNull();
+    });
   });
 
   it('switches feeds when the toggle value changes', () => {
