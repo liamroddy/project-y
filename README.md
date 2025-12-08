@@ -25,17 +25,16 @@ npm run preview
 
 ## ✨ Code Quality
 
-- 🔍 `npm run lint` - Runs ESLint with strict TypeScript + React 19 rules
-- 💅 `npm run format` / `npm run format:check` - Uses Prettier 3 for consistent code styling
+- `npm run lint` - Runs ESLint with strict TypeScript + React 19 rules
+- `npm run format` / `npm run format:check` - Uses Prettier 3 for consistent code styling
 
 ## 🧪 Tests and Coverage
 
-- ✅ `npm run test` - Executes the Jest suite
-- 📊 `npm run test:coverage` - Runs tests with Sonar coverage check
+- `npm run test` - Executes the Jest suite
+- `npm run test:coverage` - Runs tests with Sonar coverage check
 
-## 📝 Assumptions Made
+## 📝 Next Steps
 
 - For this initial POC I decided not to focus on **accessibility** and **performance**, though there is definitely room for improvement for both.
-- I also decided to implement this as a single-page "reader" app for now, with no sign-in, posting, commenting etc. enabled.
-
-**Next steps:** If I was to continue working on the project past this point, the above would be my next areas of focus.
+- I decided to implement this as a single-page "reader" app for now, with no sign-in, posting, commenting etc. enabled.
+- I also decided to just focus on unit and component testing to start, since this is a small, single page app without any complicated flows and is very easy to manually verify nothing is broken after changes. Higher level testing, like UI and E2E testing, would be good to implement as the app grows in complexity.
